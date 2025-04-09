@@ -1,0 +1,34 @@
+name: WPPConnect Server
+version: "1.0.6"
+slug: wppconnect
+description: Add-on para rodar o WPPConnect Server
+webui: http://[HOST]:[PORT:21465]
+arch:
+  - amd64
+init: false
+startup: application
+map:
+  - data:rw
+ports:
+  21465/tcp: 21465
+options:
+  SERVER_PORT: 21465
+  SECRET_KEY: "minha-chave-secreta"
+  WEBHOOK_URL: "http://homeassistant:8123/api/webhook/wppconnect"
+  FRONTEND: false
+  START_ALL_SESSION: true
+  NO_WEBHOOK_READMESSAGE: true
+  NO_WEBHOOK_LISTENACKS: true
+  NO_WEBHOOK_ONPRESENCECHANGED: true
+  NO_WEBHOOK_ONPARTICIPANTSCHANGED: true
+schema:
+  SERVER_PORT: "int?"
+  SECRET_KEY: "str?"
+  FRONTEND: "bool?"
+  START_ALL_SESSION: "bool?"
+  WEBHOOK_URL: "str?"
+  WEBHOOK_READMESSAGE: "bool?"
+  NO_WEBHOOK_READMESSAGE: "bool?"
+  NO_WEBHOOK_LISTENACKS: "bool?"
+  NO_WEBHOOK_ONPRESENCECHANGED: "bool?"
+  NO_WEBHOOK_ONPARTICIPANTSCHANGED: "bool?"

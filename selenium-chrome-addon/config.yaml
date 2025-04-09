@@ -1,0 +1,12 @@
+name: Selenium Grid Standalone
+version: 1.0.0
+slug: selenium
+description: Selenium Grid Standalone with Chrome add-on
+url: https://github.com/SeleniumHQ/docker-selenium
+webui: http://[HOST]:[PORT:4444]
+arch:
+  - amd64
+init: false
+ports:
+  4444/tcp: 4444
+  7900/tcp: 7900
