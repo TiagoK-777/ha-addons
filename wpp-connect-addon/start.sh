@@ -22,9 +22,9 @@ CMD="node bin/wppserver.js"
 [ "$FRONTEND" = "true" ] && CMD="$CMD --frontend"
 [ "$START_ALL_SESSION" = "true" ] && CMD="$CMD --startAllSession"
 [ -n "$WEBHOOK_URL" ] && CMD="$CMD --webhook-url $WEBHOOK_URL"
-[ -n "$NO_WEBHOOK_READMESSAGE" = "true"  ] && CMD="$CMD --no-webhook-readMessage $NO_WEBHOOK_READMESSAGE"
-[ -n "$NO_WEBHOOK_LISTENACKS" = "true"  ] && CMD="$CMD --no-webhook-listenAcks $NO_WEBHOOK_LISTENACKS"
-[ -n "$NO_WEBHOOK_ONPRESENCECHANGED" = "true"  ] && CMD="$CMD --no-webhook-onPresenceChanged $NO_WEBHOOK_ONPRESENCECHANGED"
-[ -n "$NO_WEBHOOK_ONPARTICIPANTSCHANGED" = "true"  ] && CMD="$CMD --no-webhook-onParticipantsChanged $NO_WEBHOOK_ONPARTICIPANTSCHANGED"
+[ "$NO_WEBHOOK_READMESSAGE" = "true" ] && CMD="$CMD --no-webhook-readMessage"
+[ "$NO_WEBHOOK_LISTENACKS" = "true" ] && CMD="$CMD --no-webhook-listenAcks"
+[ "$NO_WEBHOOK_ONPRESENCECHANGED" = "true" ] && CMD="$CMD --no-webhook-onPresenceChanged"
+[ "$NO_WEBHOOK_ONPARTICIPANTSCHANGED" = "true" ] && CMD="$CMD --no-webhook-onParticipantsChanged"
 
 exec $CMD 2>&1 | iconv -f ISO-8859-1 -t UTF-8
