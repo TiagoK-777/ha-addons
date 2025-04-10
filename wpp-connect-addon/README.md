@@ -1,6 +1,6 @@
-# WPPConnect Team
+# WPPConnect Server CLI
 
-## WPPConnect Server CLI
+[![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FTiagoK-777%2Fwpp-connect-addon)
 
 ## Nossos canais online
 
@@ -10,3 +10,60 @@ Esse pacote facilita a utilizacao do servidor WPPConnect server atraves de uma l
 [![Telegram Group](https://img.shields.io/badge/Telegram-Group-32AFED?logo=telegram)](https://t.me/wppconnect)
 [![WhatsApp Group](https://img.shields.io/badge/WhatsApp-Group-25D366?logo=whatsapp)](https://chat.whatsapp.com/LJaQu6ZyNvnBPNAVRbX00K)
 [![YouTube](https://img.shields.io/youtube/channel/subscribers/UCD7J9LG08PmGQrF5IS7Yv9A?label=YouTube)](https://www.youtube.com/c/wppconnect)
+
+## Documentação da api
+
+```
+http://homeassistant:21465/api-docs/
+```
+
+## Criar sessão e gerar token
+
+```
+curl --request POST \
+  --url http://homeassistant:21465/api/NOME-DA-SESSAO/minha-chave-secreta/generate-token \
+  --header 'accept: */*'
+```
+
+## Iniciar sessão
+
+```
+curl --request POST \
+  --url http://homeassistant:21465/api/NOME-DA-SESSAO/start-session \
+  --header 'Authorization: Bearer MEU_TOKEN_SUPER_SECRETO' \
+  --header 'Content-Type: application/json' \
+  --header 'accept: */*' \
+  --data '{
+   "webhook": "",
+   "waitQrCode": false
+ }'
+```
+
+## Gerar qrcode
+
+```
+curl --request GET \
+  --url http://homeassistant:21465/api/NOME-DA-SESSAO/qrcode-session \
+  --header 'Authorization: Bearer MEU_TOKEN_SUPER_SECRETO' \
+  --header 'accept: */*'
+```
+
+## Enviar mensagem
+ 
+```
+curl --request POST \
+  --url http://homeassistant:21465/api/NOME-DA-SESSAO/send-message \
+  --header 'Authorization: Bearer MEU_TOKEN_SUPER_SECRETO' \
+  --header 'Content-Type: application/json' \
+  --header 'accept: */*' \
+  --data '{
+    "phone": "5555999999999",
+    "isGroup": false,
+    "isNewsletter": false,
+    "isLid": false,
+    "message": "Hi from WPPConnect"  
+}'
+```
+
+## Tutorial - Youtube
+- Veja o tutorial de uso no [Canal WPPConnect](https://www.youtube.com/watch?v=zBmCnPS3JOQ).
