@@ -1,2 +1,2 @@
 build_from:
-  amd64: "wppconnect/server-cli:latest"
+  amd64: "wppconnect/server-cli:main"
