@@ -17,12 +17,6 @@ mkdir -p /data/tokens /data/userDataDir
 ln -sf /data/tokens /usr/src/wpp-server/tokens
 ln -sf /data/userDataDir /usr/src/wpp-server/userDataDir
 
-nginx
-
-sleep 1
-
-export SERVER_PORT=21466
-
 CMD="node bin/wppserver.js"
 [ -n "$SERVER_PORT" ] && CMD="$CMD -p $SERVER_PORT"
 [ -n "$SECRET_KEY" ] && CMD="$CMD -k $SECRET_KEY"
