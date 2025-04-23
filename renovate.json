@@ -7,13 +7,7 @@
         "version:\\s+\"(?<currentValue>.*?)\""
       ],
       "datasourceTemplate": "github-releases",
-      "depNameTemplate": "wppconnect-team/wppconnect-server",
-      "postUpgradeTasks": {
-        "commands": [
-          "sed -i 's/version: \"v/version: \"/' wpp-connect-addon/config.yaml"
-        ],
-        "fileFilters": ["wpp-connect-addon/config.yaml"]
-      }
+      "depNameTemplate": "wppconnect-team/wppconnect-server"
     }
   ]
 }
