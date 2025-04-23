@@ -1,0 +1,62 @@
+name: Update CHANGELOG on version bump
+
+on:
+  pull_request_target:
+    paths:
+      - config.yaml
+    types:
+      - opened
+      - synchronize
+
+permissions:
+  contents: write
+
+jobs:
+  update-changelog:
+    if: github.actor == 'renovate[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the PR branch
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Extract new version from config.yaml
+        id: extract
+        run: |
+          NEW_VERSION=$(grep 'version:' config.yaml | sed -E 's/version: "?([0-9\.]+)"?/\1/')
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Get release info from GitHub
+        id: release
+        run: |
+          VERSION=${{ steps.extract.outputs.version }}
+          RELEASE_INFO=$(curl -s https://api.github.com/repos/wppconnect-team/wppconnect-server/releases/tags/v$VERSION)
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$RELEASE_INFO" | jq -r .body >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Prepend to CHANGELOG.md
+        run: |
+          VERSION=${{ steps.extract.outputs.version }}
+          DATE=$(date +%Y-%m-%d)
+          {
+            echo "## [${VERSION}] - ${DATE}"
+            echo "${{ steps.release.outputs.body }}"
+            echo
+            cat CHANGELOG.md
+          } > temp.md && mv temp.md CHANGELOG.md
+
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}          # ← token correto
+          file_pattern: CHANGELOG.md                  # ← especifique quais arquivos adicionar
+          branch: ${{ github.event.pull_request.head.ref }}
+          commit_user_name: github-actions[bot]
+          commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
+          commit_message: |
+            docs: update CHANGELOG for version ${{ steps.extract.outputs.version }}
+          push_options: --force
