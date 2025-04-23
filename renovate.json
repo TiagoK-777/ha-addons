@@ -4,11 +4,12 @@
     {
       "fileMatch": ["^wpp-connect-addon/config\\.yaml$"],
       "matchStrings": [
-        "version:\\s+\"(?<currentValue>.*?)\""
+        "version:\\s+\"(?<currentValue>v?)(?<version>.*?)\""
       ],
-      "datasourceTemplate": "github-releases",
       "depNameTemplate": "wppconnect-team/wppconnect-server",
-      "extractVersion": "^v(?<version>.*)$"
+      "datasourceTemplate": "github-releases",
+      "packageNameTemplate": "wppconnect-team/wppconnect-server",
+      "currentValueTemplate": "{{version}}"
     }
   ]
 }
