@@ -3,7 +3,7 @@ name: Update CHANGELOG on version bump
 on:
   pull_request_target:
     paths:
-      - config.yaml
+      - 'wpp-connect-addon/config.yaml'  # Caminho corrigido
     types:
       - opened
       - synchronize
@@ -26,7 +26,7 @@ jobs:
       - name: Extract new version from config.yaml
         id: extract
         run: |
-          NEW_VERSION=$(grep 'version:' config.yaml | sed -E 's/version: "?([0-9\.]+)"?/\1/')
+          NEW_VERSION=$(grep 'version:' wpp-connect-addon/config.yaml | sed -E 's/version: "?([0-9\.]+)"?/\1/')
           echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Get release info from GitHub
@@ -46,14 +46,14 @@ jobs:
             echo "## [${VERSION}] - ${DATE}"
             echo "${{ steps.release.outputs.body }}"
             echo
-            cat CHANGELOG.md
-          } > temp.md && mv temp.md CHANGELOG.md
+            cat wpp-connect-addon/CHANGELOG.md
+          } > temp.md && mv temp.md wpp-connect-addon/CHANGELOG.md
 
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}          # ← token correto
-          file_pattern: CHANGELOG.md                  # ← especifique quais arquivos adicionar
+          token: ${{ secrets.GITHUB_TOKEN }}
+          file_pattern: wpp-connect-addon/CHANGELOG.md  # Caminho corrigido
           branch: ${{ github.event.pull_request.head.ref }}
           commit_user_name: github-actions[bot]
           commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
