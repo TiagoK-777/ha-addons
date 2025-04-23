@@ -60,7 +60,7 @@ curl --request POST \
     "isNewsletter": false,
     "isLid": false,
     "message": "Hi from WPPConnect"  
-}'
+ }'
 ```
 
 ## Tutorial - Youtube
