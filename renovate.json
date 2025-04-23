@@ -7,9 +7,7 @@
         "version:\\s+\"(?<currentValue>.*?)\""
       ],
       "datasourceTemplate": "github-releases",
-      "depNameTemplate": "wppconnect-team/wppconnect-server",
-      "versioningTemplate": "semver",
-      "extractVersionTemplate": "{{ currentValue | replace('v', '') }}"
+      "depNameTemplate": "wppconnect-team/wppconnect-server"
     }
   ]
 }
