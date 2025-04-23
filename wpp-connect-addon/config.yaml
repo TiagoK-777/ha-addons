@@ -1,5 +1,5 @@
 name: WPPConnect Server
-version: "2.8.5"
+version: "2.8.6"
 slug: wppconnect
 description: Add-on para rodar o WPPConnect Server
 build_from:
