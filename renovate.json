@@ -9,7 +9,7 @@
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "wppconnect-team/wppconnect-server",
       "versioningTemplate": "semver",
-      "extractVersionTemplate": "{{ currentValue | replace('v', '') }}"
+      "replaceStringTemplate": "{{ currentValue | replace('v', '') }}"
     }
   ]
 }
