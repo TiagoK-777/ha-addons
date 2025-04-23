@@ -1,13 +1,13 @@
 {
-  "extends": ["config:base"],
-  "regexManagers": [
+  "customManagers": [
     {
       "fileMatch": ["^wpp-connect-addon/config\\.yaml$"],
-      "matchStrings": [
-        "version:\\s+\"(?<currentValue>.*?)\""
-      ],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "wppconnect-team/wppconnect-server"
+      "datasource": "github-releases",
+      "depName": "wppconnect-team/wppconnect-server",
+      "extractVersion": "version:\\s+\"(?<currentValue>.*?)\"",
+      "extractVersionTemplate": "{{{replace '^v' '' currentValue}}}",
+      "versioningTemplate": "semver",
+      "updateStrategy": "replace"
     }
   ]
 }
