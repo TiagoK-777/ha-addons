@@ -1,13 +1,19 @@
 {
-  "customManagers": [
+  "extends": ["config:base"],
+  "regexManagers": [
     {
       "fileMatch": ["^wpp-connect-addon/config\\.yaml$"],
-      "datasource": "github-releases",
-      "depName": "wppconnect-team/wppconnect-server",
-      "extractVersion": "version:\\s+\"(?<currentValue>.*?)\"",
-      "extractVersionTemplate": "{{{replace '^v' '' currentValue}}}",
-      "versioningTemplate": "semver",
-      "updateStrategy": "replace"
+      "matchStrings": [
+        "version:\\s+\"(?<currentValue>.*?)\""
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "wppconnect-team/wppconnect-server",
+      "postUpgradeTasks": {
+        "commands": [
+          "sed -i 's/version: \"v/version: \"/' wpp-connect-addon/config.yaml"
+        ],
+        "fileFilters": ["wpp-connect-addon/config.yaml"]
+      }
     }
   ]
 }
