@@ -1,6 +1,8 @@
 ## [2.8.6] - 2025-04-24
 ## [2.8.6](https://github.com/wppconnect-team/wppconnect-server/compare/v2.8.5...v2.8.6) (2025-03-29)
 
+## Esse addon se encotra em período de testes, erros podem ocorrer.
+## Faça um backup antes de atualizar!
 
 ### Bug Fixes
 
