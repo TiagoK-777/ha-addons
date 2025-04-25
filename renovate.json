@@ -31,11 +31,13 @@
         "^selenium-chrome-addon/config\\.yaml$"
       ],
       "matchStrings": [
-        "selenium-(?<currentValue>\\d+\\.\\d+\\.\\d+)"
+        "version:\\s+\"(?<currentValue>v.*?)\""
       ],
       "depNameTemplate": "selenium",
       "datasourceTemplate": "github-releases",
-      "packageNameTemplate": "SeleniumHQ/selenium"
+      "packageNameTemplate": "SeleniumHQ/selenium",
+      "extractVersion": "^selenium-(?<version>\\d+\\.\\d+\\.\\d+)$",
+      "currentValueTemplate": "{{version}}"
     }
   ],
   "packageRules": [
