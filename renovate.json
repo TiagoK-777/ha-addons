@@ -34,16 +34,19 @@
         "version:\\s+\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
       ],
       "depNameTemplate": "selenium",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "packageNameTemplate": "SeleniumHQ/selenium"
     }
   ],
   "packageRules": [
     {
-      "matchPackageNames": ["SeleniumHQ/selenium"],
-      "allowedVersions": "/^selenium-\\d+\\.\\d+\\.\\d+$/"
+      "matchPackageNames": [
+        "SeleniumHQ/selenium"
+      ],
+      "matchCurrentVersion": ">=1.0.0",
+      "allowedVersions": "!/^[^0-9]/"
     }
   ],
-  "automerge": false,
-  "platformAutomerge": false
+  "automerge": true,
+  "platformAutomerge": true
 }
