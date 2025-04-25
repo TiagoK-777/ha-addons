@@ -1,4 +1,0 @@
-[submodule "frigate-notify-addon"]
-	path = frigate-notify-addon
-	url = https://github.com/TiagoK-777/frigate-notify-addon.git
-	branch = master
