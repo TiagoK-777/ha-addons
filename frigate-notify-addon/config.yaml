@@ -1,0 +1,22 @@
+name: Frigate Notify
+version: "v0.4.4"
+slug: frigate-notify
+description: Frigate Notify add-on
+url: "https://github.com/0x2142/frigate-notify"
+arch:
+  - amd64
+  - aarch64
+init: false
+startup: application
+map:
+  - "config:rw"
+ports:
+  8000/tcp: 8000
+environment:
+  FN_CONFIGFILE: /config/frigate-notify.yml
+  TZ: ${TZ:-UTC}
+schema:
+  SERVER_PORT: "int?"
+image: "ghcr.io/0x2142/frigate-notify"
+
+
