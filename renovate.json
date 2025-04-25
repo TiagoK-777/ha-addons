@@ -1,8 +1,12 @@
 {
-  "extends": ["config:base"],
+  "extends": [
+    "config:base"
+  ],
   "regexManagers": [
     {
-      "fileMatch": ["^wpp-connect-addon/config\\.yaml$"],
+      "fileMatch": [
+        "^wpp-connect-addon/config\\.yaml$"
+      ],
       "matchStrings": [
         "version:\\s+\"(?<currentValue>v?)(?<version>.*?)\""
       ],
@@ -12,14 +16,35 @@
       "currentValueTemplate": "{{version}}"
     },
     {
-      "fileMatch": ["^frigate-notify-addon/config\\.yaml$"],
+      "fileMatch": [
+        "^frigate-notify-addon/config\\.yaml$"
+      ],
       "matchStrings": [
         "version:\\s+\"(?<currentValue>v.*?)\""
       ],
       "depNameTemplate": "0x2142/frigate-notify",
       "datasourceTemplate": "github-releases",
       "packageNameTemplate": "0x2142/frigate-notify"
+    },
+    {
+      "fileMatch": [
+        "^selenium-chrome-addon/config\\.yaml$"
+      ],
+      "matchStrings": [
+        "selenium-(?<currentValue>\\d+\\.\\d+\\.\\d+)"
+      ],
+      "depNameTemplate": "selenium",
+      "datasourceTemplate": "github-releases",
+      "packageNameTemplate": "SeleniumHQ/selenium"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "selenium"
+      ],
+      "ignoreUnstable": true,
+      "allowedVersions": "stable"
     }
   ]
 }
-
