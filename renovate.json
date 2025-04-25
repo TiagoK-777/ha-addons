@@ -27,26 +27,20 @@
       "packageNameTemplate": "0x2142/frigate-notify"
     },
     {
-      "fileMatch": [
-        "^selenium-chrome-addon/config\\.yaml$"
-      ],
+      "fileMatch": ["^frigate-notify-addon/config\\.yaml$"],
       "matchStrings": [
-        "version:\\s+\"(?<currentValue>v.*?)\""
+        "version:\\s+\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
       ],
       "depNameTemplate": "selenium",
       "datasourceTemplate": "github-releases",
-      "packageNameTemplate": "SeleniumHQ/selenium",
-      "extractVersion": "^selenium-(?<version>\\d+\\.\\d+\\.\\d+)$",
-      "currentValueTemplate": "{{version}}"
+      "packageNameTemplate": "SeleniumHQ/selenium"
     }
   ],
   "packageRules": [
     {
-      "matchPackageNames": [
-        "selenium"
-      ],
-      "ignoreUnstable": true,
-      "allowedVersions": "stable"
+      "matchPackageNames": ["SeleniumHQ/selenium"],
+      "matchCurrentVersion": "/(\\d+\\.\\d+\\.\\d+)/",
+      "allowedVersions": "/^(?:selenium-)?({{matchCurrentVersion}})$/"
     }
   ]
 }
