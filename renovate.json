@@ -27,7 +27,7 @@
       "packageNameTemplate": "0x2142/frigate-notify"
     },
     {
-      "fileMatch": ["^selenium-chrome-addon/config\\.yaml$"],
+      "fileMatch": ["^frigate-notify-addon/config\\.yaml$"],
       "matchStrings": [
         "version:\\s+\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
       ],
