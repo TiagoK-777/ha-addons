@@ -1,7 +1,7 @@
 name: WPPConnect Server
 version: "2.8.6"
 slug: wppconnect
-description: Add-on para rodar o WPPConnect Server
+description: API para controle do WhatsApp via HTTP
 build_from:
   amd64: "wppconnect/server-cli:main"
 webui: http://[HOST]:[PORT:21465]/api-docs/
