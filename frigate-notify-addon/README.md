@@ -41,7 +41,7 @@ See [Install / Setup](https://frigate-notify.0x2142.com/latest/install/).
 
 ## Configuration
 
-An example config file has been provided (`example-config.yml`). Please copy this & edit to fit your needs.
+You must create a config file as `frigate-notify.yml` in the root of your Home Assistant configuration directory.
 
 The sample config contains inline descriptions for each field. For additional details on the available config options & the defaults, see the [Config](https://frigate-notify.0x2142.com/latest/config/) docs.
 
