@@ -13,3 +13,12 @@
 A Evolution API começou como uma API de controlador do WhatsApp baseada em [CodeChat](https://github.com/code-chat-br/whatsapp-api), que, por sua vez, implementou a biblioteca [Baileys](https://github.com/WhiskeySockets/Baileys). Embora originalmente focada no WhatsApp, a Evolution API tornou-se uma plataforma abrangente que suporta vários serviços de mensagens e integrações. Continuamos a reconhecer o CodeChat por estabelecer as bases.
 
 Hoje, a API Evolution não se limita ao WhatsApp. Ela se integra a várias plataformas, como Typebot, Chatwoot, Dify e OpenAI, oferecendo uma ampla gama de funcionalidades além das mensagens. A Evolution API suporta tanto a API do WhatsApp baseada em Baileys quanto a API oficial do WhatsApp Business, com suporte futuro para Instagram e Messenger.
+
+---
+
+## Este addon está sendo útil?
+[![Suporte](https://img.shields.io/badge/Donation-Nubank-blue)](https://nubank.com.br/cobrar/nv10d/6813fc28-be53-463c-bc19-b7b565a009e4)
+### Considere fazer uma doação para apoiar o desenvolvimento e manter este projeto ativo! 🙏
+### Qualquer valor é bem-vindo e ajuda muito ❤️
+
+---
