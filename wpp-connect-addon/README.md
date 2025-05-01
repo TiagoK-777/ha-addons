@@ -9,6 +9,15 @@ Esse pacote facilita a utilizacao do servidor WPPConnect server atraves de uma l
 [![WhatsApp Group](https://img.shields.io/badge/WhatsApp-Group-25D366?logo=whatsapp)](https://chat.whatsapp.com/LJaQu6ZyNvnBPNAVRbX00K)
 [![YouTube](https://img.shields.io/youtube/channel/subscribers/UCD7J9LG08PmGQrF5IS7Yv9A?label=YouTube)](https://www.youtube.com/c/wppconnect)
 
+---
+
+## Este addon está sendo útil?
+[![Suporte](https://img.shields.io/badge/Donation-Nubank-blue)](https://nubank.com.br/cobrar/nv10d/6813fc28-be53-463c-bc19-b7b565a009e4)
+### Considere fazer uma doação para apoiar o desenvolvimento e manter este projeto ativo! 🙏
+### Qualquer valor é bem-vindo e ajuda muito ❤️
+
+---
+
 ## Documentação da api
 
 ```
