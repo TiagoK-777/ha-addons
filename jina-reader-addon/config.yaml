@@ -11,7 +11,7 @@ map:
   - "config:rw"
   - "data:rw"
 ports:
-  50893/tcp: 3000
+  3000/tcp: 3000
 options:
   SEARXNG_INSTANCE_URL: "http://localhost:8080"
 schema:
