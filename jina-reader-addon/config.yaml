@@ -1,0 +1,23 @@
+name: Jina AI's Reader
+version: "v0.0.9"
+slug: jinareader
+description: Jina Reader Add-on for Home Assistant
+url: "https://github.com/intergalacticalvariable/reader"
+arch:
+  - amd64
+init: false
+startup: application
+map:
+  - "config:rw"
+  - "data:rw"
+ports:
+  50893/tcp: 3000
+options:
+  SEARXNG_INSTANCE_URL: "http://localhost:8080"
+schema:
+  SEARXNG_INSTANCE_URL: "str?"
+environment:
+  TZ: ${TZ:-UTC}
+image: "ghcr.io/tiagok-777/reader"
+
+
