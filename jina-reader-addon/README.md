@@ -2,6 +2,15 @@
 
 O **Jina Reader Add-on** permite que o Home Assistant utilize um crawler/headless browser baseado em Node.js e Puppeteer para capturar conteúdos de páginas web. Ideal para gerar screenshots, extrair dados estruturados (Markdown, HTML, texto) ou analisar conteúdo de sites com seletor CSS.
 
+---
+
+## Este addon está sendo útil?
+[![Suporte](https://img.shields.io/badge/Donation-Nubank-blue)](https://nubank.com.br/cobrar/nv10d/6813fc28-be53-463c-bc19-b7b565a009e4)
+Considere fazer uma doação para apoiar o desenvolvimento e manter este projeto ativo! 🙏
+Qualquer valor é bem-vindo e ajuda muito ❤️
+
+---
+
 ## 🚀 Funcionalidade
 
 - 🌐 Navegação headless com Chromium/Google Chrome
@@ -10,20 +19,7 @@ O **Jina Reader Add-on** permite que o Home Assistant utilize um crawler/headles
 - 🔎 Espera por seletores (`X-Wait-For-Selector`)
 - ✂️ Remoção de elementos via CSS (`X-Remove-Selector`)
 - ⚙️ Proxy, timeout e geração automática de alt-text
-- 📂 Armazena resultados em `/config/reader-screenshot` (persistente)
-
----
-
-## 📦 Instalação
-
-1. Adicione o repositório personalizado ao Home Assistant:
-
-https://github.com/SEU_USUARIO/reader-addon
-
-2. Acesse o Supervisor → Add-ons
-3. Instale o **Jina Reader**
-4. Inicie o add-on
-5. (Opcional) Ative o "Iniciar com o sistema" e "Mostrar na barra lateral"
+- 📂 Armazena screenshots em `/homeassistant/reader-screenshot`
 
 ---
 
