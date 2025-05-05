@@ -7,27 +7,32 @@
 
 # Selenium Grid Standalone Add-on
 
-Este add-on executa o Selenium Grid Standalone dentro do ambiente do Home Assistant, permitindo controlar navegadores remotamente por meio de fluxos no Node-RED.
+Este add-on executa o Selenium Grid Standalone dentro do ambiente do Home Assistant, permitindo o controle automatizado de navegadores via Node-RED.
 
 ## Integração com Node-RED
 
-Para utilizar este serviço com o Node-RED, siga os passos abaixo:
+Para utilizar com o Node-RED, siga os passos abaixo:
 
-1. **Instale o nó adicional no Node-RED:**
+1. **Instale o nó adicional:**
 
-`node-red-contrib-simple-webdriver`
+   ```bash
+   node-red-contrib-simple-webdriver
+   ```
 
 2. **Configure o nó `browser` com a seguinte URL:**
 
-`http://homeassistant:4444`
+   ```
+   http://homeassistant:4444
+   ```
 
-Isso conectará o Node-RED ao Selenium Grid Standalone, possibilitando a automação de ações em navegadores como abrir páginas, clicar em elementos, preencher formulários e muito mais.
+Isso conecta o Node-RED ao Selenium Grid Standalone, permitindo automatizar ações como abrir páginas, clicar em botões, preencher formulários e muito mais.
 
 ## Porta padrão
 
-O Selenium Grid Standalone escuta na porta `4444` por padrão.
+O serviço escuta por padrão na porta `4444`.
 
 ---
 
-Ideal para quem deseja realizar automações avançadas envolvendo controle de páginas web a partir do Home Assistant.
+Ideal para automações avançadas com navegação web diretamente integradas ao Home Assistant.
+
 
