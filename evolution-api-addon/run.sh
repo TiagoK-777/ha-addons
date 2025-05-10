@@ -68,7 +68,7 @@ for i in $(seq 1 10); do
     echo "[db] Postgres iniciado com sucesso!"
     break
   fi
-  echo "[db] Aguardando Postgres iniciar ($i/10)…"
+  echo "[db] Aguardando Postgres iniciar ($i/10)..."
   sleep 2
 done
 
