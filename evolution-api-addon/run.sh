@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/usr/bin/env bash
 set -eux
 
 CONFIG="/data/options.json"
@@ -58,10 +58,25 @@ su-exec redis redis-server \
   --save 300 10 \
   --save 900 1
 
-# 4) Start Postgres
+# 4) Start Postgres em background
 echo "[db] starting..."
 su-exec postgres postgres -D "$PGDATA" -c listen_addresses=localhost &
-sleep 2
+
+# 5) Aguarda até o Postgres aceitar conexões
+for i in $(seq 1 10); do
+  if psql -h localhost -U postgres -c "SELECT 1" >/dev/null 2>&1; then
+    echo "[db] Postgres iniciado com sucesso!"
+    break
+  fi
+  echo "[db] Aguardando Postgres iniciar ($i/10)…"
+  sleep 2
+done
+
+# 6) Se, após o loop, ainda não conseguir conectar, aborta:
+if ! psql -h localhost -U postgres -c "SELECT 1" >/dev/null 2>&1; then
+  echo "[db][error] Postgres nao respondeu apos 10 tentativas, abortando..."
+  exit 1
+fi
 
 # 5) Garante role “user”
 psql -v ON_ERROR_STOP=1 --username postgres <<EOSQL

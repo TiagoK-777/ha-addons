@@ -19,7 +19,7 @@ Para utilizar com o Node-RED, siga os passos abaixo:
    node-red-contrib-simple-webdriver
    ```
 
-2. **Configure o nó `browser` com a seguinte URL:**
+2. **Configure o nó `open browser` com a seguinte URL:**
 
    ```
    http://homeassistant:4444
