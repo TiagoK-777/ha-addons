@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -eux
 
+# variáveis de ambiente 
 CONFIG="/data/options.json"
 if [ -f "$CONFIG" ]; then
   echo "[run.sh] Carregando configuracoes de $CONFIG..."
-  # Para cada variável, leia do JSON se existir, senão mantenha o default
   SERVER_TYPE=$(jq -r '.SERVER_TYPE // "http"' "$CONFIG")
   SERVER_HOST=$(jq -r '.SERVER_HOST // "homeassistant"' "$CONFIG")
   SERVER_PORT=$(jq -r '.SERVER_PORT // 49152' "$CONFIG")
@@ -92,19 +92,21 @@ EOSQL
 
 # 6) Garante DB “evolution”
 if [ "$(psql -U postgres -tAc "SELECT 1 FROM pg_database WHERE datname='evolution'")" != "1" ]; then
-  echo "[db] creating evolution..."
+  echo "[db] criando db evolution..."
   psql --username postgres -c "CREATE DATABASE evolution OWNER \"${DATABASE_USER}\";"
 else
-  echo "[db] evolution already exists, skipping."
+  echo "[db] evolution já existe, ignorando."
 fi
 psql --username postgres -c "GRANT ALL PRIVILEGES ON DATABASE evolution TO \"${DATABASE_USER}\";"
 
+# Imprime usuário e senha do db nos logs
 echo "database_user: $DATABASE_USER"
 echo "database_password: $DATABASE_PASSWORD"
 
-# 7) Migrations e API
+# Define DATABASE_CONNECTION_URI
 DATABASE_CONNECTION_URI=${DATABASE_CONNECTION_URI}
 
+# 7) Migrations e API
 cd /evolution
 ./Docker/scripts/deploy_database.sh
 
