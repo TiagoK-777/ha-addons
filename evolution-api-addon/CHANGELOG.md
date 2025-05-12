@@ -1,0 +1,1 @@
+## [CHANGELOG](https://github.com/EvolutionAPI/evolution-api/blob/main/CHANGELOG.md)
