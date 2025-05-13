@@ -24,6 +24,7 @@ RUN apk update \
        postgresql17 \
        postgresql17-contrib \
        su-exec \
+       curl \
        redis \
 	   jq \
        ffmpeg bash openssl tzdata \
