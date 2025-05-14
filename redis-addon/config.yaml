@@ -1,0 +1,17 @@
+name: Redis
+version: "8.0.1-alpine3.21"
+slug: redis
+description: Redis add-on
+url: "https://github.com/redis/docker-library-redis"
+arch:
+  - amd64
+  - aarch64
+init: false
+startup: application
+ports:
+  6379/tcp: 6379
+environment:
+  TZ: ${TZ:-UTC}
+image: "redis"
+
+
