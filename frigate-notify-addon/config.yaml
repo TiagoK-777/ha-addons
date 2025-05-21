@@ -15,8 +15,4 @@ ports:
 environment:
   FN_CONFIGFILE: /config/frigate-notify.yml
   TZ: ${TZ:-UTC}
-schema:
-  SERVER_PORT: "int?"
 image: "ghcr.io/0x2142/frigate-notify"
-
-
