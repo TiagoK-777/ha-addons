@@ -19,6 +19,15 @@
       "depNameTemplate": "0x2142/frigate-notify",
       "datasourceTemplate": "github-releases",
       "packageNameTemplate": "0x2142/frigate-notify"
+    },
+    {
+      "fileMatch": ["^redis-addon/config\\.yaml$"],
+      "matchStrings": [
+        "version:\\s*\"?(?<currentValue>[\\d.]+)-.*\"?\\s*"
+      ],
+      "depNameTemplate": "redis/redis",
+      "datasourceTemplate": "github-releases",
+      "packageNameTemplate": "redis/redis"
     }
   ],
   "packageRules": [

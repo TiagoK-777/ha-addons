@@ -1,5 +1,5 @@
 name: Redis
-version: "8.0.1-alpine3.21"
+version: "7.4.3-alpine"
 slug: redis
 description: Redis add-on
 url: "https://github.com/redis/docker-library-redis"
