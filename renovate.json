@@ -18,9 +18,13 @@
       ],
       "depNameTemplate": "0x2142/frigate-notify",
       "datasourceTemplate": "github-releases",
-      "packageNameTemplate": "0x2142/frigate-notify",
+      "packageNameTemplate": "0x2142/frigate-notify"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchDepNames": ["0x2142/frigate-notify"],
       "automerge": true
     }
   ]
 }
-
