@@ -4,12 +4,11 @@
     {
       "fileMatch": ["^wpp-connect-addon/config\\.yaml$"],
       "matchStrings": [
-        "version:\\s+\"(?<currentValue>v?)(?<version>.*?)\""
+        "version:\\s*\"(?<currentValue>[\\w.]+)\"\\s*"
       ],
       "depNameTemplate": "wppconnect-team/wppconnect-server",
       "datasourceTemplate": "github-releases",
-      "packageNameTemplate": "wppconnect-team/wppconnect-server",
-      "currentValueTemplate": "{{version}}"
+      "packageNameTemplate": "wppconnect-team/wppconnect-server"
     },
     {
       "fileMatch": ["^frigate-notify-addon/config\\.yaml$"],
