@@ -1,6 +1,40 @@
 #!/bin/sh
+set -e
+
+##############################################
+###          Configuração de Shutdown      ###
+##############################################
+
+graceful_shutdown() {
+    trap - TERM INT
+    echo "Recebido sinal de encerramento. Parando o serviço..."
+    
+    # Comando mais robusto para encontrar processos filhos
+    pkill -TERM -P $NODE_PID
+    kill -TERM $NODE_PID 2>/dev/null
+    
+    # Espera com timeout ajustado
+    SECONDS=5
+    while kill -0 $NODE_PID 2>/dev/null; do
+        if [ $SECONDS -gt 15 ]; then
+            echo "Timeout - Forçando kill"
+            kill -9 $NODE_PID
+            break
+        fi
+        sleep 1
+    done
+    exit 143
+}
+
+# Capturar sinais de término
+trap 'graceful_shutdown' SIGTERM SIGINT
+
+##############################################
+###  Carregar Variáveis de Ambiente        ###
+##############################################
 
 if [ -f /data/options.json ]; then
+  # Extrair configurações do arquivo JSON
   export SERVER_PORT=$(jq -r '.SERVER_PORT // ""' /data/options.json)
   export SECRET_KEY=$(jq -r '.SECRET_KEY // ""' /data/options.json)
   export FRONTEND=$(jq -r '.FRONTEND // ""' /data/options.json)
@@ -13,11 +47,21 @@ if [ -f /data/options.json ]; then
   export NO_WEBHOOK_ONPARTICIPANTSCHANGED=$(jq -r '.NO_WEBHOOK_ONPARTICIPANTSCHANGED // ""' /data/options.json)
 fi
 
+##############################################
+###  Preparação de Diretórios e Symlinks   ###
+##############################################
+
 mkdir -p /data/tokens /data/userDataDir
 ln -sf /data/tokens /usr/src/wpp-server/tokens
 ln -sf /data/userDataDir /usr/src/wpp-server/userDataDir
 
+##############################################
+###  Construção da Linha de Comando        ###
+##############################################
+
 CMD="node bin/wppserver.js"
+
+# Adicionar parâmetros conforme configurações
 [ -n "$SERVER_PORT" ] && CMD="$CMD -p $SERVER_PORT"
 [ -n "$SECRET_KEY" ] && CMD="$CMD -k $SECRET_KEY"
 [ "$FRONTEND" = "true" ] && CMD="$CMD --frontend"
@@ -29,4 +73,13 @@ CMD="node bin/wppserver.js"
 [ "$NO_WEBHOOK_ONPRESENCECHANGED" = "true" ] && CMD="$CMD --no-webhook-onPresenceChanged"
 [ "$NO_WEBHOOK_ONPARTICIPANTSCHANGED" = "true" ] && CMD="$CMD --no-webhook-onParticipantsChanged"
 
-exec $CMD 2>&1 | iconv -f ISO-8859-1 -t UTF-8
+##############################################
+###  Execução da Aplicação                 ###
+##############################################
+
+# Iniciar serviço em background
+$CMD 2>&1 &
+NODE_PID=$!
+
+# Manter o script ativo esperando pelo processo
+wait "$NODE_PID"
