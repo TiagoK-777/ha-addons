@@ -26,7 +26,7 @@ jobs:
       - name: Extract new version from config.yaml
         id: extract
         run: |
-          NEW_VERSION=$(grep 'version:' wpp-connect-addon/config.yaml | sed -E 's/version: "?([0-9\.]+)"?/\1/')
+          NEW_VERSION=$(grep 'version:' wpp-connect-addon/config.yaml | sed -E 's/version:\s*"([\w.]+)"\s*
           echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Get release info from GitHub
