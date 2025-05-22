@@ -46,5 +46,8 @@ RUN mkdir -p "$PGDATA" /run/postgresql /run/redis \
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
 
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -s http://localhost:49152/ | jq -e '.status == 200' || exit 1
+
 # --- Ponto de entrada: inicia Redis + init DB + start Postgres + migrations + API ---
 ENTRYPOINT ["sh", "/run.sh"]
