@@ -28,6 +28,15 @@
       "depNameTemplate": "redis/redis",
       "datasourceTemplate": "github-releases",
       "packageNameTemplate": "redis/redis"
+    },
+    {
+      "fileMatch": ["^selenium-chrome-addon/config\\.yaml$"],
+      "matchStrings": [
+        "version:\\s*\"(?<currentValue>[\\d.]+)\"\\s*"
+      ],
+      "depNameTemplate": "selenium/standalone-chrome",
+      "datasourceTemplate": "docker",
+      "packageNameTemplate": "selenium/standalone-chrome"
     }
   ],
   "packageRules": [
