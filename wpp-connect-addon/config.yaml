@@ -5,7 +5,8 @@ description: "API para controle do WhatsApp via HTTP"
 url: "https://github.com/wppconnect-team/wppconnect-server"
 build_from:
   amd64: "wppconnect/server-cli:main"
-webui: http://[HOST]:[PORT:21465]/api-docs/
+webui: "http://[HOST]:[PORT:21465]/api-docs/"
+watchdog: "http://[HOST]:[PORT:21465]/"
 arch:
   - amd64
 init: false

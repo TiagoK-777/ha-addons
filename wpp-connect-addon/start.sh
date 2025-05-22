@@ -73,12 +73,26 @@ CMD="node bin/wppserver.js"
 [ "$NO_WEBHOOK_ONPRESENCECHANGED" = "true" ] && CMD="$CMD --no-webhook-onPresenceChanged"
 [ "$NO_WEBHOOK_ONPARTICIPANTSCHANGED" = "true" ] && CMD="$CMD --no-webhook-onParticipantsChanged"
 
+echo ""
+echo " _____ _   _ _   _ _   _______ _________________  _____ _    _____ ";
+echo "|_   _| | | | | | | \ | |  _  \  ___| ___ \ ___ \|  _  | |  |_   _|";
+echo "  | | | |_| | | | |  \| | | | | |__ | |_/ / |_/ /| | | | |    | |  ";
+echo "  | | |  _  | | | | . \` | | | |  __||    /| ___ \| | | | |    | |  ";
+echo "  | | | | | | |_| | |\  | |/ /| |___| |\ \| |_/ /\ \_/ / |____| |  ";
+echo "  \_/ \_| |_/\___/\_| \_/___/ \____/\_| \_\____/  \___/\_____/\_/  ";
+echo "                                                                   ";
+echo " ======================================================================  ";
+echo "  WPPConnect - Comunicação Instantânea Poderosa                         ";
+echo "  Versão 2.8.6 | Energizado para Home Assistant                          ";
+echo " ======================================================================  ";
+echo ""
+
 ##############################################
 ###  Execução da Aplicação                 ###
 ##############################################
 
 # Iniciar serviço em background
-$CMD 2>&1 &
+exec $CMD &
 NODE_PID=$!
 
 # Manter o script ativo esperando pelo processo
