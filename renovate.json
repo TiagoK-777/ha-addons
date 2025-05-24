@@ -1,8 +1,13 @@
 {
-  "extends": ["config:base"],
-  "regexManagers": [
+  "extends": [
+    "config:recommended"
+  ],
+  "customManagers": [
     {
-      "fileMatch": ["^wpp-connect-addon/config\\.yaml$"],
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^wpp-connect-addon/config\\.yaml$/"
+      ],
       "matchStrings": [
         "version:\\s*\"(?<currentValue>[\\w.]+)\"\\s*"
       ],
@@ -11,7 +16,10 @@
       "packageNameTemplate": "wppconnect-team/wppconnect-server"
     },
     {
-      "fileMatch": ["^frigate-notify-addon/config\\.yaml$"],
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^frigate-notify-addon/config\\.yaml$/"
+      ],
       "matchStrings": [
         "version:\\s+\"(?<currentValue>v.*?)\""
       ],
@@ -20,7 +28,10 @@
       "packageNameTemplate": "0x2142/frigate-notify"
     },
     {
-      "fileMatch": ["^redis-addon/config\\.yaml$"],
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^redis-addon/config\\.yaml$/"
+      ],
       "matchStrings": [
         "version:\\s*\"?(?<currentValue>[\\d.]+)-.*\"?\\s*"
       ],
@@ -29,7 +40,10 @@
       "packageNameTemplate": "redis/redis"
     },
     {
-      "fileMatch": ["^selenium-chrome-addon/config\\.yaml$"],
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^selenium-chrome-addon/config\\.yaml$/"
+      ],
       "matchStrings": [
         "version:\\s*\"(?<currentValue>[\\d.]+)\"\\s*"
       ],
@@ -40,7 +54,9 @@
   ],
   "packageRules": [
     {
-      "matchDepNames": ["0x2142/frigate-notify"],
+      "matchDepNames": [
+        "0x2142/frigate-notify"
+      ],
       "automerge": true
     }
   ]
