@@ -47,6 +47,7 @@ AUTHENTICATION_API_KEY: minha-senha-secreta # Chave de autenticação para acess
 # Configurações adicionais
 CUSTOM_ENV: DATABASE_SAVE_IS_ON_WHATSAPP_DAYS=1 DATABASE_SAVE_DATA_HISTORIC=false DATABASE_SAVE_DATA_NEW_MESSAGE=false # Variáveis de configuração adicionais, separadas por espaço
 ```
+---
 
 ## 🔒 Recomendações de Segurança
 
@@ -55,6 +56,7 @@ CUSTOM_ENV: DATABASE_SAVE_IS_ON_WHATSAPP_DAYS=1 DATABASE_SAVE_DATA_HISTORIC=fals
 
 É necessário atualizar o `DATABASE_CONNECTION_URI` com o mesmo "user" e "pass" definidos em `DATABASE_USER` e `DATABASE_PASSWORD`
 
+---
 
 ## 📋 Exemplos de Configuração Avançada (`CUSTOM_ENV`)
 
@@ -73,6 +75,7 @@ As variáveis em `CUSTOM_ENV` devem ser listadas na mesma linha, separadas por e
     ```
 Um exemplo com as variáveis de ambiente disponíveis podem ser encontradas [aqui](https://github.com/EvolutionAPI/evolution-api/blob/main/.env.example).
 
+---
 
 ## 🤝 Contribuições
 
