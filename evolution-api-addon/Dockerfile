@@ -6,7 +6,7 @@
 ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:latest
 FROM ${BUILD_FROM} AS base
 
-# 2) Puxe a aplicação já construída da imagem oficial
+# 2) Puxe a aplicação já construida da imagem oficial
 FROM atendai/evolution-api:v2.2.3 AS app
 
 # 3) Runtime: base + PostgreSQL + Redis + App
