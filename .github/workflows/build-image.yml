@@ -7,9 +7,9 @@ on:
     # Opcional: Você pode adicionar filtros de 'paths' aqui para economizar o disparo inicial do workflow,
     # mas a lógica de filtragem dentro do job da matriz ainda será essencial.
     paths:
-       - '**/config.yaml'
-       - '**/start.sh'
-       - '**/Dockerfile'
+       - './wpp-connect-addon/config.yaml'
+       - './wpp-connect-addon/start.sh'
+       - './wpp-connect-addon/Dockerfile'
 
   workflow_dispatch: # Permite disparo manual
 
