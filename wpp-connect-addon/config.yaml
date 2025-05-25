@@ -37,3 +37,4 @@ schema:
   NO_WEBHOOK_LISTENACKS: "bool?"
   NO_WEBHOOK_ONPRESENCECHANGED: "bool?"
   NO_WEBHOOK_ONPARTICIPANTSCHANGED: "bool?"
+image: "ghcr.io/tiagok-777/wpp-connect-addon"
