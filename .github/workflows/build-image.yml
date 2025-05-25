@@ -24,11 +24,6 @@ jobs:
             context: ./wpp-connect-addon
             dockerfile: ./wpp-connect-addon/Dockerfile
             image_name: wpp-connect-addon
-          - name: frigate-notify-addon
-            config_path: ./frigate-notify-addon/config.yaml # Adicionado!
-            context: ./frigate-notify-addon
-            dockerfile: ./frigate-notify-addon/Dockerfile
-            image_name: frigate-notify-addon
           # Adicione mais addons aqui seguindo o mesmo padrão
 
     steps:
