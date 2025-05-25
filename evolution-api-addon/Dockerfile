@@ -28,7 +28,6 @@ RUN apk update \
        redis \
        jq \
        ffmpeg bash openssl tzdata \
-    && wget -q --tries=5 --timeout=15 -O /evolution/.env https://raw.githubusercontent.com/EvolutionAPI/evolution-api/main/.env.example \
     && rm -rf /var/cache/apk/*
 
 # Diretório de trabalho (app)
@@ -36,6 +35,9 @@ WORKDIR /evolution
 
 # --- Copia a aplicação pré-buildada ---
 COPY --from=app /evolution /evolution
+
+# --- Copia o arquivo de configuração do app ---
+RUN wget -q --tries=5 --timeout=15 -O /evolution/.env https://raw.githubusercontent.com/EvolutionAPI/evolution-api/main/.env.example
 
 # --- Cria e ajusta diretórios de dados ---
 RUN mkdir -p "$PGDATA" /run/postgresql /run/redis \
