@@ -26,9 +26,9 @@ RUN apk update \
        su-exec \
        curl \
        redis \
-	   jq \
+       jq \
        ffmpeg bash openssl tzdata \
-	&& wget -q --tries=5 --timeout=15 -O /evolution/.env https://raw.githubusercontent.com/EvolutionAPI/evolution-api/main/.env.example \
+    && wget -q --tries=5 --timeout=15 -O /evolution/.env https://raw.githubusercontent.com/EvolutionAPI/evolution-api/main/.env.example \
     && rm -rf /var/cache/apk/*
 
 # Diretório de trabalho (app)
