@@ -36,7 +36,7 @@ jobs:
       # Novo passo: Obter arquivos alterados (para filtrar builds)
       - name: Get changed files relevant to ${{ matrix.addon.name }}
         id: check_changes
-        uses: tj-actions/changed-files@v40
+        uses: tj-actions/changed-files@v46
         with:
           # Define os caminhos que, se alterados, indicam que este addon precisa de um build.
           # Inclua o diretório do contexto e o Dockerfile.
