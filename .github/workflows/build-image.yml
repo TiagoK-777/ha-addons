@@ -73,8 +73,6 @@ jobs:
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
             # 2. Tag com a versão extraída do config.yml
             type=raw,value=${{ steps.extract_version.outputs.version_from_config }}
-            # 3. Tag sem o 'v' inicial, se a versão do config.yml começar com 'v' (opcional)
-            type=raw,value=${{ steps.extract_version.outputs.version_from_config && startsWith(steps.extract_version.outputs.version_from_config, 'v') && steps.extract_version.outputs.version_from_config.substring(1) || '' }}
             # 4. Tag com SHA do commit (curto) - sempre útil para rastreabilidade
             type=sha,format=short
           labels: |
