@@ -2,98 +2,192 @@ name: Update CHANGELOG on version bump
 on:
   pull_request_target:
     paths:
-      - '**/config.yaml' # Este trigger está OK, pois ele captura qualquer mudança que queremos no futuro
+      # Disparador genérico: o workflow será disparado se qualquer arquivo config.yaml for modificado.
+      - '**/config.yaml'
     types:
       - opened
       - synchronize
+
 permissions:
-  contents: write
+  contents: write # Permissão para commitar e fazer push no repositório
+  pull-requests: write # Permissão para ler e interagir com PRs para `changed-files`
+
 jobs:
   update-changelog:
     runs-on: ubuntu-latest
     strategy:
+      # Define a matriz de addons para iteração. Cada item da matriz será
+      # executado como um job separado, permitindo processar múltiplos addons.
       matrix:
         addon:
           - name: wpp-connect-addon
             config_path: wpp-connect-addon/config.yaml
             changelog_path: wpp-connect-addon/CHANGELOG.md
-            release_repo: wppconnect-team/wppconnect-server
+            release_repo: wppconnect-team/wppconnect-server # Repositório da release oficial do WPPConnect
           - name: frigate-notify-addon
             config_path: frigate-notify-addon/config.yaml
             changelog_path: frigate-notify-addon/CHANGELOG.md
-            release_repo: 0x2142/frigate-notify
+            release_repo: 0x2142/frigate-notify # Repositório da release oficial do Frigate Notify
+          # --- Adicione mais addons aqui seguindo o mesmo padrão ---
+          # - name: NOME_DO_SEU_ADDON
+          #   config_path: CAMINHO_DO_SEU_ADDON/config.yaml
+          #   changelog_path: CAMINHO_DO_SEU_ADDON/CHANGELOG.md
+          #   release_repo: ORG/REPOSITORIO_DA_RELEASE_OFICIAL_DO_ADDON
+
+    # A execução do job só ocorrerá se o ator que originou o evento for o Renovate Bot.
     if: github.actor == 'renovate[bot]'
+
     steps:
       - name: Check out the PR branch
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.head.ref }} # Faz checkout do branch do Pull Request
 
-      # **IMPORTANTE:** ADICIONE ESTE PASSO PARA OBTER A LISTA DE ARQUIVOS ALTERADOS
-      # Isso é necessário porque `pull_request_target` tem escopo limitado por segurança
-      # para `github.event.pull_request.changed_files` antes do checkout completo.
-      - name: Get changed files (for `pull_request_target` context)
+      # Passo crucial para identificar arquivos alterados no contexto de pull_request_target.
+      # `github.event.pull_request.changed_files` não é confiável em pull_request_target para forks,
+      # então usamos `tj-actions/changed-files` para obter a lista de arquivos de fato.
+      - name: Get changed files affected by this Renovate PR
         id: changed-files
         uses: tj-actions/changed-files@v40
         with:
+          # Para cada addon na matriz, verificamos se o seu config.yaml específico foi alterado.
           files_yaml: |
             ${{ matrix.addon.config_path }}
 
+      # Debug: Lista os arquivos no diretório do addon para verificar a estrutura e existência de arquivos.
       - name: Debug - List files in addon directory
-        run: ls -la ${{ matrix.addon.name }} # Este passo pode rodar para todos os addons da matriz
+        run: |
+          echo "Listing files in directory: ${{ matrix.addon.name }}"
+          # Verifica se o diretório existe antes de tentar listar, evitando erro se o addon não existe
+          if [ -d "${{ matrix.addon.name }}" ]; then
+            ls -la "${{ matrix.addon.name }}"
+          else
+            echo "Directory ${{ matrix.addon.name }} does not exist in the current PR context."
+          fi
 
       - name: Extract new version from config.yaml for ${{ matrix.addon.name }}
         id: extract
-        # **NOVA CONDIÇÃO AQUI:** Só roda se o config.yaml deste addon foi alterado.
+        # Este passo só será executado se o config.yaml *deste addon específico* foi modificado no PR.
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
+          # Verifica se o arquivo config.yaml do addon existe no branch do PR.
           if [ ! -f "${{ matrix.addon.config_path }}" ]; then
-            echo "Error: config.yaml not found at ${{ matrix.addon.config_path }}"
-            exit 1
+            echo "Error: config.yaml not found at ${{ matrix.addon.config_path }}. Skipping extraction."
+            exit 1 # Falha este passo se o arquivo crítico não for encontrado.
           fi
+          
+          # Extrai a versão usando sed: captura o conteúdo dentro das aspas após "version: ".
+          # Ex: version: "v2.8.6" -> v2.8.6
           NEW_VERSION=$(grep 'version:' "${{ matrix.addon.config_path }}" | sed -E 's/version:\s*"([^"]+)".*/\1/')
           
-          echo "Debug: Extracted version -> $NEW_VERSION"
+          echo "Debug: Extracted version -> $NEW_VERSION" # Saída para depuração
+          
+          # Define a saída 'version' para uso em passos posteriores.
           if [ -z "$NEW_VERSION" ]; then
-            echo "Warning: No version extracted from ${{ matrix.addon.config_path }}. This might be normal if the config wasn't updated."
-            echo "version=" >> $GITHUB_OUTPUT
+            echo "Warning: No version extracted from ${{ matrix.addon.config_path }}. This might be expected if the version line format is different or not present."
+            echo "version=" >> $GITHUB_OUTPUT # Define a variável como vazia se nada for extraído.
           else
             echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
           fi
 
       - name: Get release info from GitHub for ${{ matrix.addon.name }}
         id: release
-        # **NOVA CONDIÇÃO AQUI:** Só roda se o config.yaml deste addon foi alterado E se uma versão foi extraída.
+        # Este passo só será executado se o config.yaml do addon foi alterado e uma versão foi extraída.
         if: steps.changed-files.outputs.any_changed == 'true' && steps.extract.outputs.version != ''
         run: |
           VERSION="${{ steps.extract.outputs.version }}"
-          # A lógica `if [ -z "$VERSION" ]` pode ser removida se o `if` do step garantir a versão.
-          # Mas mantê-la como uma checagem de segurança não faz mal.
-          # Resto do script do 'Get release info'
+          
+          # Construindo a URL da API do GitHub para buscar informações da release pela tag.
+          # Assume que as tags são formatadas como vX.Y.Z (ex: v2.8.6).
+          # Se suas tags forem apenas X.Y.Z, remova o 'v' antes de $VERSION.
+          API_URL="https://api.github.com/repos/${{ matrix.addon.release_repo }}/releases/tags/$VERSION"
+          
+          echo "Debug: Attempting to fetch release info from: $API_URL"
+          
+          # Usa curl com -f para falhar se houver erro HTTP (ex: 404 - tag não encontrada).
+          # Adiciona Authorization header para autenticação e evitar rate limits.
+          RELEASE_INFO=$(curl -s -f -H "Accept: application/vnd.github.v3+json" -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$API_URL")
+          
+          # Verifica o código de saída do curl. Se diferente de zero, significa erro (tag não encontrada, etc.).
+          if [ $? -ne 0 ]; then
+            echo "Error fetching release info for tag 'v$VERSION' from '${{ matrix.addon.release_repo }}'. This might mean the tag/release does not exist yet for this version."
+            echo "body=" >> $GITHUB_OUTPUT # Garante que 'body' é vazio para evitar erros posteriores.
+            exit 0 # Sai com sucesso para não falhar o workflow se a release não existe (comportamento desejado).
+          fi
+          
+          echo "Debug: Raw API response -> $RELEASE_INFO" # Saída para depuração: resposta completa da API.
+          
+          # Extrai o corpo (body) da release usando jq.
+          RELEASE_BODY=$(echo "$RELEASE_INFO" | jq -r .body)
+          
+          # Verifica se o corpo da release está vazio ou é "null".
+          if [ "$RELEASE_BODY" = "null" ] || [ -z "$RELEASE_BODY" ]; then
+            echo "Warning: Release body is empty or 'null' for version $VERSION. No details will be added to CHANGELOG for this release."
+            echo "body=" >> $GITHUB_OUTPUT # Garante que 'body' é vazio.
+          else
+            echo "body<<EOF" >> $GITHUB_OUTPUT # Início do marcador heredoc.
+            echo "$RELEASE_BODY" >> $GITHUB_OUTPUT # Conteúdo do corpo da release.
+            echo "EOF" >> $GITHUB_OUTPUT # Fim do marcador heredoc.
+          fi
 
       - name: Prepend to CHANGELOG.md for ${{ matrix.addon.name }}
-        # **NOVA CONDIÇÃO AQUI:** Só roda se o config.yaml deste addon foi alterado E se uma versão foi extraída.
+        # Este passo só será executado se o config.yaml do addon foi alterado e uma versão válida foi extraída.
         if: steps.changed-files.outputs.any_changed == 'true' && steps.extract.outputs.version != ''
         run: |
           VERSION="${{ steps.extract.outputs.version }}"
-          # Resto do script do 'Prepend'
+          DATE=$(date +%Y-%m-%d)
+          RELEASE_BODY="${{ steps.release.outputs.body }}"
+          
+          # Formata a nova entrada do CHANGELOG.
+          NEW_CHANGELOG_ENTRY_HEADER="## [${VERSION}] - ${DATE}"
+          
+          echo "Debug: Proposed new CHANGELOG entry header: $NEW_CHANGELOG_ENTRY_HEADER"
+          echo "Debug: Proposed new CHANGELOG entry body (first 200 chars): ${RELEASE_BODY:0:200}..." # Preview
+          
+          # Verifica se o arquivo CHANGELOG.md existe. Se não, cria o diretório e um arquivo vazio.
+          if [ ! -f "${{ matrix.addon.changelog_path }}" ]; then
+            echo "Warning: CHANGELOG file not found at ${{ matrix.addon.changelog_path }}. Creating necessary directories and an empty CHANGELOG."
+            mkdir -p "$(dirname "${{ matrix.addon.changelog_path }}")" || { echo "Error: Could not create directory for CHANGELOG."; exit 1; }
+            touch "${{ matrix.addon.changelog_path }}" || { echo "Error: Could not create CHANGELOG file."; exit 1; }
+          fi
+          
+          # Cria um arquivo temporário com a nova entrada seguida do conteúdo existente do CHANGELOG.
+          {
+            echo "$NEW_CHANGELOG_ENTRY_HEADER"
+            echo "$RELEASE_BODY"
+            echo # Adiciona uma linha em branco para melhor formatação
+            cat "${{ matrix.addon.changelog_path }}" # Adiciona o conteúdo do CHANGELOG.md existente.
+          } > temp.md
+          
+          # Move o arquivo temporário para sobrescrever o CHANGELOG.md original.
+          mv temp.md "${{ matrix.addon.changelog_path }}" || { echo "Error: Could not move temp.md to CHANGELOG."; exit 1; }
+          
+          echo "Debug: Content of ${{ matrix.addon.changelog_path }} after prepend (first 1000 chars):"
+          head -c 1000 "${{ matrix.addon.changelog_path }}"
+          echo "..."
+          ls -la "${{ matrix.addon.changelog_path }}" # Mostra tamanho atualizado do arquivo.
 
       - name: Commit and push changes for ${{ matrix.addon.name }}
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          # Especifica o arquivo a ser commitado.
           file_pattern: ${{ matrix.addon.changelog_path }}
+          # O branch para onde o commit será feito (o próprio branch do PR).
           branch: ${{ github.event.pull_request.head.ref }}
+          # Informações do autor do commit.
           commit_user_name: github-actions[bot]
           commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
           commit_message: |
             docs(${
+              # Personaliza a mensagem do commit com base no nome do addon.
+              # Use um mapeamento para prefixos de commit específicos (ex: docs(wpp-connect):)
               {
                 'wpp-connect-addon': 'wpp-connect',
                 'frigate-notify-addon': 'frigate-notify'
               }[matrix.addon.name] or 'general'
             }): update CHANGELOG for ${{ matrix.addon.name }} version ${{ steps.extract.outputs.version }}
-          push_options: --force
-        # **NOVA CONDIÇÃO AQUI:** Só roda se o config.yaml deste addon foi alterado E se uma versão foi extraída.
+          push_options: --force # Força o push para atualizar o branch do PR (útil para Renovate).
+        # Este passo só será executado se o config.yaml do addon foi alterado e uma versão válida foi extraída.
         if: steps.changed-files.outputs.any_changed == 'true' && steps.extract.outputs.version != ''
