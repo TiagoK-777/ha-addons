@@ -28,6 +28,11 @@ jobs:
             context: ./wpp-connect-addon
             dockerfile: ./wpp-connect-addon/Dockerfile
             image_name: wpp-connect-addon
+          - name: evolution-api-addon
+            config_path: ./evolution-api-addon/config.yaml
+            context: ./evolution-api-addon
+            dockerfile: ./evolution-api-addon/Dockerfile
+            image_name: evolution-api-addon
 
     steps:
       - name: Checkout repository
