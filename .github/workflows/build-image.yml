@@ -112,7 +112,7 @@ jobs:
 
       - name: Build and push Docker image
         if: env.build_addon == 'true' # Só executa se determinamos que o build é necessário
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.addon.context }}
           file: ${{ matrix.addon.dockerfile }}
