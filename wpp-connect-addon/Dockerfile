@@ -1,4 +1,4 @@
-ARG BUILD_FROM
+ARG BUILD_FROM=wppconnect/server-cli:main
 FROM $BUILD_FROM
 
 RUN apk add --no-cache \
