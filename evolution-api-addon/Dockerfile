@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-# --- Add-on Dockerfile usando imagem pública atendai/evolution-api:v2.1.1 ---
+# --- Add-on Dockerfile usando imagem publica atendai/evolution-api:v2.1.1 ---
 
 # 1) Base Supervisor
 ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:latest
