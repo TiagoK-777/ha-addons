@@ -1,0 +1,97 @@
+name: Build & Publish Docker Image (from config.yml version)
+
+on:
+  push:
+    branches:
+      - main
+    # Removido o trigger de tags aqui, pois a versão será lida do config.yml.
+    # Se você ainda quiser tags explícitas, pode mantê-lo e adicionar lógica para priorizar.
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        addon:
+          - name: wpp-connect-addon
+            config_path: ./wpp-connect-addon/config.yaml # Adicionado! Caminho para o config.yml
+            context: ./wpp-connect-addon
+            dockerfile: ./wpp-connect-addon/Dockerfile
+            image_name: wpp-connect-addon
+          - name: frigate-notify-addon
+            config_path: ./frigate-notify-addon/config.yaml # Adicionado!
+            context: ./frigate-notify-addon
+            dockerfile: ./frigate-notify-addon/Dockerfile
+            image_name: frigate-notify-addon
+          # Adicione mais addons aqui seguindo o mesmo padrão
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # --- Nova Etapa: Extrair a versão do config.yml ---
+      - name: Extract version from config.yml
+        id: extract_version
+        run: |
+          if [ ! -f "${{ matrix.addon.config_path }}" ]; then
+            echo "Error: config.yml not found at ${{ matrix.addon.config_path }}. Cannot extract version."
+            exit 1
+          fi
+          # Usa o sed corrigido para pegar a versão, ex: "v2.8.6"
+          VERSION=$(grep 'version:' "${{ matrix.addon.config_path }}" | sed -E 's/version:\s*"([^"]+)".*/\1/')
+          
+          echo "Debug: Extracted version from config.yml -> $VERSION"
+          
+          if [ -z "$VERSION" ]; then
+            echo "Error: No version extracted from ${{ matrix.addon.config_path }}."
+            exit 1 # Falha o workflow se a versão não for encontrada, pois é crucial.
+          else
+            echo "version_from_config=$VERSION" >> $GITHUB_OUTPUT
+          fi
+      # ----------------------------------------------------
+
+      - name: Docker Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/${{ matrix.addon.image_name }}
+          tags: |
+            # 1. Tag padrão: 'latest' para o branch principal
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+            # 2. Tag com a versão extraída do config.yml
+            type=raw,value=${{ steps.extract_version.outputs.version_from_config }}
+            # 3. Tag sem o 'v' inicial, se a versão do config.yml começar com 'v' (opcional)
+            type=raw,value=${{ steps.extract_version.outputs.version_from_config && startsWith(steps.extract_version.outputs.version_from_config, 'v') && steps.extract_version.outputs.version_from_config.substring(1) || '' }}
+            # 4. Tag com SHA do commit (curto) - sempre útil para rastreabilidade
+            type=sha,format=short
+          labels: |
+            org.opencontainers.image.source=${{ github.event.repository.html_url }}
+            org.opencontainers.image.version=${{ steps.extract_version.outputs.version_from_config }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.addon.context }}
+          file: ${{ matrix.addon.dockerfile }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # - name: Verify image push (optional)
+      #   run: |
+      #     echo "Image ${{ steps.meta.outputs.tags }} pushed successfully to GHCR!"
