@@ -1,4 +1,4 @@
-name: Evolution API Beta
+name: Evolution API
 version: "v0.0.5"
 slug: evolutionapi
 description: "API para controle do WhatsApp via HTTP"
