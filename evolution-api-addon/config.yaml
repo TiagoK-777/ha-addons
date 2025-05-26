@@ -1,5 +1,5 @@
-name: Evolution API
-version: "v0.0.4"
+name: Evolution API Beta
+version: "v0.0.5"
 slug: evolutionapi
 description: "API para controle do WhatsApp via HTTP"
 url: "https://github.com/EvolutionAPI/evolution-api"
@@ -10,8 +10,7 @@ startup: application
 restart: "on-failure"
 map:
   - data:rw
-  - data/store:/evolution/store
-  - data/instances:/evolution/instances
+  - config:rw
 arch:
   - amd64
 options:
@@ -24,6 +23,7 @@ options:
   DATABASE_PASSWORD: "pass"
   DATABASE_CONNECTION_URI: 'postgresql://user:pass@localhost:5432/evolution?schema=public'
   AUTHENTICATION_API_KEY: minha-senha-secreta
+  PERSISTENCE_DIR: "/data"
   CUSTOM_ENV: DATABASE_SAVE_IS_ON_WHATSAPP_DAYS=1 DATABASE_SAVE_DATA_HISTORIC=false DATABASE_SAVE_DATA_NEW_MESSAGE=false
 schema:
   SERVER_TYPE: "str?"
@@ -35,7 +35,9 @@ schema:
   DATABASE_PASSWORD: "str?"
   DATABASE_CONNECTION_URI: "str?"
   AUTHENTICATION_API_KEY: "str?"
+  PERSISTENCE_DIR: "str?"
   CUSTOM_ENV: >-
     match(^(([A-Z0-9_]+=(\"[^\"]*\"|'[^']*'|[^ ]+))( +[A-Z0-9_]+=(\"[^\"]*\"|'[^']*'|[^ ]+))*)?$)
 ports:
   49152/tcp: 49152
+image: "ghcr.io/tiagok-777/evolution-api-addon"

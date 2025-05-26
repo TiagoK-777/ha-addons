@@ -1,55 +1,48 @@
 # syntax=docker/dockerfile:1
 
-# --- Add-on Dockerfile usando imagem publica atendai/evolution-api:v2.1.1 ---
+### Estágio 1: Configuração da Imagem Base e Variáveis de Ambiente ###
 
-# 1) Base Supervisor
-ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:latest
-FROM ${BUILD_FROM} AS base
+# Imagem oficial da Evolution API como base.
+FROM atendai/evolution-api:v2.2.3
 
-# 2) Puxe a aplicação já construida da imagem oficial
-FROM atendai/evolution-api:v2.2.3 AS app
-
-# 3) Runtime: base + PostgreSQL + Redis + App
-FROM ${BUILD_FROM}
-
-# --- Variáveis de ambiente ---
+# Define variáveis de ambiente essenciais para o ambiente Docker e Home Assistant Add-on.
 ENV TZ=America/Sao_Paulo \
     DOCKER_ENV=true \
-    PGDATA=/data/postgresql \
-    REDIS_URL=redis://localhost:6379
+    REDIS_URL=redis://localhost:6379 \
+    WORKDIR=/evolution
 
-# --- Instala dependências: Postgres, Redis, utilitários e tzdata ---
+### Estágio 2: Instalação de Dependências Adicionais e Configurações Essenciais ###
+
+# Atualiza os pacotes e instala dependências adicionais como PostgreSQL, Redis e utilitários.
 RUN apk update \
     && apk add --no-cache \
        postgresql17 \
        postgresql17-contrib \
        su-exec \
-       curl \
        redis \
        jq \
-       ffmpeg bash openssl tzdata \
+       tzdata \
+       git \
+       ffmpeg \
+       wget \
+       curl \
+       bash \
+       openssl \
     && rm -rf /var/cache/apk/*
 
-# Diretório de trabalho (app)
+# Define o diretório de trabalho.
 WORKDIR /evolution
 
-# --- Copia a aplicação pré-buildada ---
-COPY --from=app /evolution /evolution
+### Estágio 3: Configuração do Script de Inicialização e Ponto de Entrada ###
 
-# --- Copia o arquivo de configuração do app ---
-RUN wget -q --tries=5 --timeout=15 -O /evolution/.env https://raw.githubusercontent.com/EvolutionAPI/evolution-api/main/.env.example
-
-# --- Cria e ajusta diretórios de dados ---
-RUN mkdir -p "$PGDATA" /run/postgresql /run/redis \
-    && chown -R postgres:postgres "$PGDATA" /run/postgresql \
-    && chown -R redis:redis /run/redis
-
-# --- Copia e dá permissão ao script de inicialização ---
+# Copia e concede permissões de execução ao script de inicialização principal.
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
 
+# Define um HEALTHCHECK para monitorar a saúde da aplicação.
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -s http://localhost:49152/ | jq -e '.status == 200' || exit 1
 
-# --- Ponto de entrada: inicia Redis + init DB + start Postgres + migrations + API ---
+# Define o ENTRYPOINT que será executado quando o contêiner iniciar.
+# Este script gerencia a inicialização do Redis, PostgreSQL, migrações e a própria API.
 ENTRYPOINT ["sh", "/run.sh"]

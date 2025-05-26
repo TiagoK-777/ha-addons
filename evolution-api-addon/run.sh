@@ -8,6 +8,10 @@ log_info() {
   echo "[INFO] $1"
 }
 
+log_error() {
+  echo "[ERROR] $1"
+}
+
 # -----------------------------------------------------------------------------
 # Variáveis globais para controle de PIDs
 # -----------------------------------------------------------------------------
@@ -95,9 +99,6 @@ cleanup() {
   exit 0
 }
 
-# Registrar trap para SIGTERM e SIGINT
-trap cleanup SIGTERM SIGINT
-
 # -----------------------------------------------------------------------------
 # Carrega as variáveis do .env, se existir
 # -----------------------------------------------------------------------------
@@ -121,6 +122,7 @@ if [ -f "$CONFIG" ]; then
   DATABASE_PROVIDER=$(jq -r '.DATABASE_PROVIDER // "postgresql"' "$CONFIG")
   DATABASE_CONNECTION_URI=$(jq -r '.DATABASE_CONNECTION_URI // "postgresql://user:pass@localhost:5432/evolution?schema=public"' "$CONFIG")
   AUTHENTICATION_API_KEY=$(jq -r '.AUTHENTICATION_API_KEY // "minha-senha-secreta"' "$CONFIG")
+  PERSISTENCE_DIR=$(jq -r '.PERSISTENCE_DIR // "/data"' "$CONFIG")
   
   # Carrega as variáveis definidas em CUSTOM_ENV
   CUSTOM_ENV=$(jq -r '.CUSTOM_ENV // ""' "$CONFIG")
@@ -148,6 +150,8 @@ export TZ
 export DATABASE_PROVIDER
 export DATABASE_CONNECTION_URI
 export AUTHENTICATION_API_KEY
+export PERSISTENCE_DIR
+export PGDATA="${PERSISTENCE_DIR}/postgresql"
 export SERVER_URL="http://${SERVER_HOST}:${SERVER_PORT}"
 
 # -----------------------------------------------------------------------------
@@ -158,13 +162,38 @@ env | while read -r line; do
 printf "  - %s\n" "$line"
 done
 
+# Registrar trap para SIGTERM e SIGINT
+trap cleanup SIGTERM SIGINT
+
 # -----------------------------------------------------------------------------
 # Preparação de diretórios
 # -----------------------------------------------------------------------------
-log_info "Criando diretórios de persistência em /data e /run..."
-mkdir -p /data/postgresql /data/redis /run/postgresql /run/redis
-chown -R postgres:postgres /data/postgresql /run/postgresql
-chown -R redis:redis /data/redis /run/redis
+log_info "Criando diretórios de persistência em ${PERSISTENCE_DIR}..."
+mkdir -p "${PERSISTENCE_DIR}/postgresql" "${PERSISTENCE_DIR}/redis" "${PERSISTENCE_DIR}/instances" "/run/postgresql" "/run/redis"
+chown -R postgres:postgres "${PERSISTENCE_DIR}/postgresql" "/run/postgresql"
+chown -R redis:redis "${PERSISTENCE_DIR}/redis" "/run/redis"
+
+ln -sf "${PERSISTENCE_DIR}/instances" "/evolution/instances"
+
+# -----------------------------------------------------------------------------
+# Migrando o database caso esteja em /data
+# -----------------------------------------------------------------------------
+if [[ -f "/data/postgresql/PG_VERSION" && "$PERSISTENCE_DIR" != "/data" ]]; then
+    log_info "Migrando diretórios de persistência para ${PERSISTENCE_DIR}"
+    if [ -f "/config/addons_config/evolution-api/postgresql/PG_VERSION" ]; then
+        log_info "Removendo arquivos antigos de /config/addons_config/evolution-api"
+        rm -rf "/config/addons_config/evolution-api" || { log_error "Falha ao remover arquivos de /config/addons_config/evolution-api"; }
+    fi
+    mkdir -p "${PERSISTENCE_DIR}"
+    cp -rp "/data/postgresql" "${PERSISTENCE_DIR}/" || { log_error "Falha ao copiar postgresql"; exit 1; }
+    cp -rp "/data/redis" "${PERSISTENCE_DIR}/" || { log_error "Falha ao copiar redis"; exit 1; }
+    cp -rp "/data/instances" "${PERSISTENCE_DIR}/" || { log_error "Falha ao copiar instances"; exit 1; }
+    rm -rf "/data/postgresql" || { log_error "Falha ao remover postgresql antigo"; exit 1; }
+    rm -rf "/data/redis" || { log_error "Falha ao remover redis antigo"; exit 1; }
+    rm -rf "/data/instances" || { log_error "Falha ao remover instances"; exit 1; }
+    log_info "Migração concluída. Aguardando 10 segundos para estabilização..."
+    sleep 10
+fi
 
 # -----------------------------------------------------------------------------
 # Inicialização do PostgreSQL
@@ -189,7 +218,7 @@ fi
 # -----------------------------------------------------------------------------
 log_info "Iniciando Redis (foreground)..."
 su-exec redis redis-server \
-  --dir /data/redis \
+  --dir ${PERSISTENCE_DIR}/redis \
   --unixsocket /run/redis/redis.sock \
   --appendonly yes \
   --appendfilename appendonly.aof \
@@ -258,16 +287,17 @@ cd /evolution
 
 echo ""
 echo "┌───────────────────────────────────────────────────────────────────────────────────────┐"
-echo "│ Database USER: $DATABASE_USER"
-echo "│ Database PASS: $DATABASE_PASSWORD"
-echo "│ API Key Global: $AUTHENTICATION_API_KEY"
-echo "│ Database URL: $DATABASE_CONNECTION_URI"
-echo "│ Server URL: $SERVER_URL"
+echo "│ Usuário do banco de dados: $DATABASE_USER"
+echo "│ Senha do banco de dados: $DATABASE_PASSWORD"
+echo "│ Chave de API Global: $AUTHENTICATION_API_KEY"
+echo "│ URL do banco de dados: $DATABASE_CONNECTION_URI"
+echo "│ URL do servidor: $SERVER_URL"
+echo "│ Diretório de persistência: $PERSISTENCE_DIR"
 echo "└───────────────────────────────────────────────────────────────────────────────────────┘"
 echo ""
 
 log_info "Iniciando aplicação Node.js..."
-node dist/main 2>&1 | iconv -f ISO-8859-1 -t UTF-8 -c &
+node dist/main &
 NODE_PID=$!
 
 # Aguardar por algum dos processos terminar
