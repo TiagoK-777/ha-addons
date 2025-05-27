@@ -16,12 +16,13 @@ jobs:
       - name: Checkout PR
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0  # pega hist completo para evitar problemas com branches
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ github.event.pull_request.head.ref }}
-
+      
       - name: Fetch base branch
         run: git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
-
+      
       - name: Detect changed config.yaml
         id: changed
         run: |
