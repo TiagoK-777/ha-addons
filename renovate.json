@@ -58,6 +58,12 @@
         "0x2142/frigate-notify"
       ],
       "automerge": true
+    },
+    {
+      "matchDepNames": [
+        "redis/redis"
+      ],
+      "automerge": true
     }
   ]
 }
