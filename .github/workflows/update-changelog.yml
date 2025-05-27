@@ -1,157 +1,109 @@
-name: Update CHANGELOG on version bump
+name: Update CHANGELOG only for changed addon
+
 on:
   pull_request_target:
     paths:
-      # Disparador mais genérico se muitos config.yaml mudam
       - '**/config.yaml'
-    types:
-      - opened
-      - synchronize
+    types: [opened, synchronize]
+
 permissions:
   contents: write
+
 jobs:
-  update-changelog:
+  detect-and-update-changelog:
     runs-on: ubuntu-latest
-    # Use uma matriz para listar os addons e seus caminhos
-    strategy:
-      matrix:
-        addon:
-          - name: wpp-connect-addon
-            config_path: wpp-connect-addon/config.yaml
-            changelog_path: wpp-connect-addon/CHANGELOG.md
-            release_repo: wppconnect-team/wppconnect-server
-          - name: frigate-notify-addon
-            config_path: frigate-notify-addon/config.yaml
-            changelog_path: frigate-notify-addon/CHANGELOG.md
-            release_repo: 0x2142/frigate-notify
-    if: github.actor == 'renovate[bot]'
     steps:
-      - name: Check out the PR branch
+      - name: Checkout PR
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ github.event.pull_request.head.ref }}
 
-      - name: Debug - List files in addon directory
-        run: ls -la ${{ matrix.addon.name }}
-        # Verifique se os arquivos config.yaml e CHANGELOG.md realmente existem no diretório
-        # e com o nome esperado.
-
-      - name: Extract new version from config.yaml for ${{ matrix.addon.name }}
-        id: extract
+      - name: Detect changed config.yaml
+        id: changed
         run: |
-          if [ ! -f "${{ matrix.addon.config_path }}" ]; then
-            echo "Error: config.yaml not found at ${{ matrix.addon.config_path }}"
+          files=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.ref }})
+          for f in $files; do
+            case "$f" in
+              */config.yaml)
+                echo "changed_yaml=$f" >> "$GITHUB_OUTPUT"
+                ;;
+            esac
+          done
+
+      # Atenção: só prossegue se tiver config.yaml alterado
+      - name: Set addon info
+        id: addon
+        run: |
+          declare -A addons
+          addons["wpp-connect-addon"]="wpp-connect-addon/config.yaml|wpp-connect-addon/CHANGELOG.md|wppconnect-team/wppconnect-server"
+          addons["frigate-notify-addon"]="frigate-notify-addon/config.yaml|frigate-notify-addon/CHANGELOG.md|0x2142/frigate-notify"
+
+          config_path="${{ steps.changed.outputs.changed_yaml }}"
+          if [ -z "$config_path" ]; then
+            echo "Nenhum config.yaml alterado. Saindo."
             exit 1
           fi
-          # Mude esta linha:
-          # NEW_VERSION=$(grep 'version:' "${{ matrix.addon.config_path }}" | sed -E 's/version:\s*"([\w.]+)"\s*//')
-          # Para esta: (captura o grupo 1)
-          NEW_VERSION=$(grep 'version:' "${{ matrix.addon.config_path }}" | sed -E 's/version:\s*"([^"]+)".*/\1/')
-          
-          echo "Debug: Extracted version -> $NEW_VERSION"
-          if [ -z "$NEW_VERSION" ]; then
-            echo "Warning: No version extracted from ${{ matrix.addon.config_path }}. This might be normal if the config wasn't updated."
-            echo "version=" >> $GITHUB_OUTPUT
-          else
-            echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
-          fi
 
+          addon_dir=$(dirname "$config_path")
+          IFS='|' read -r cfg changelog repo <<< "${addons[$addon_dir]}"
+          echo "addon_dir=$addon_dir" >> $GITHUB_OUTPUT
+          echo "config_path=$cfg" >> $GITHUB_OUTPUT
+          echo "changelog_path=$changelog" >> $GITHUB_OUTPUT
+          echo "release_repo=$repo" >> $GITHUB_OUTPUT
 
-      - name: Get release info from GitHub for ${{ matrix.addon.name }}
+      - name: Extract new version from config.yaml
+        id: extract
+        run: |
+          version=$(grep 'version:' "${{ steps.addon.outputs.config_path }}" | sed -E 's/version:\s*"([^"]+)".*/\1/')
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Get release info from GitHub
         id: release
         run: |
           VERSION="${{ steps.extract.outputs.version }}"
           if [ -z "$VERSION" ]; then
-            echo "Skipping release info: No version extracted."
-            echo "body=" >> $GITHUB_OUTPUT # Define 'body' como vazio se não há versão
-            exit 0 # Sai com sucesso, mas sem tentar obter release info
-          fi
-          
-          # Use CURL com -f para falhar se houver erro HTTP (ex: 404 Not Found)
-          # Adicione o Authorization header se o release_repo for privado ou para evitar rate limits mais rápido.
-          RELEASE_INFO=$(curl -s -f -H "Accept: application/vnd.github.v3+json" -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ matrix.addon.release_repo }}/releases/tags/$VERSION")
-          
-          if [ $? -ne 0 ]; then # Verifica o código de saída do curl
-            echo "Error fetching release info for v$VERSION from ${{ matrix.addon.release_repo }}. HTTP errors or not found."
+            echo "No version found. Skipping."
             echo "body=" >> $GITHUB_OUTPUT
-            exit 1 # Falha a etapa se o CURL falhar
+            exit 0
           fi
-          
-          echo "Debug: Raw API response -> $RELEASE_INFO"
-          
-          # Extrai o corpo da release
+          RELEASE_INFO=$(curl -s -H "Accept: application/vnd.github.v3+json" -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ steps.addon.outputs.release_repo }}/releases/tags/$VERSION")
           RELEASE_BODY=$(echo "$RELEASE_INFO" | jq -r .body)
-          
           if [ "$RELEASE_BODY" = "null" ] || [ -z "$RELEASE_BODY" ]; then
-            echo "Warning: Release body is empty or 'null' for v$VERSION."
-            echo "body=" >> $GITHUB_OUTPUT # Garante que 'body' é vazio se não houver conteúdo
+            echo "body=" >> $GITHUB_OUTPUT
           else
             echo "body<<EOF" >> $GITHUB_OUTPUT
             echo "$RELEASE_BODY" >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
           fi
-        if: steps.extract.outputs.version != '' # Garante que roda somente se a versão foi extraída
 
-
-      - name: Prepend to CHANGELOG.md for ${{ matrix.addon.name }}
+      - name: Prepend to CHANGELOG.md
         run: |
           VERSION="${{ steps.extract.outputs.version }}"
           if [ -z "$VERSION" ]; then
-            echo "Skipping CHANGELOG update: No version extracted."
+            echo "No version. Skipping CHANGELOG."
             exit 0
           fi
-          
           DATE=$(date +%Y-%m-%d)
-          RELEASE_BODY="${{ steps.release.outputs.body }}"
-          
-          # Conteúdo que será pré-adicionado
-          NEW_CHANGELOG_ENTRY_HEADER="## [${VERSION}] - ${DATE}"
-          NEW_CHANGELOG_ENTRY_BODY="$RELEASE_BODY"
-          
-          echo "Debug: Proposed new CHANGELOG entry header: $NEW_CHANGELOG_ENTRY_HEADER"
-          echo "Debug: Proposed new CHANGELOG entry body: $NEW_CHANGELOG_ENTRY_BODY"
-          
-          # Verifica se o arquivo CHANGELOG.md existe. Se não, cria um vazio.
-          if [ ! -f "${{ matrix.addon.changelog_path }}" ]; then
-            echo "Warning: CHANGELOG file not found at ${{ matrix.addon.changelog_path }}. Creating an empty one."
-            mkdir -p "$(dirname "${{ matrix.addon.changelog_path }}")" # Cria o diretório se não existir
-            touch "${{ matrix.addon.changelog_path }}"
+          NEW_CHANGELOG_ENTRY_HEADER="## [$VERSION] - $DATE"
+          NEW_CHANGELOG_ENTRY_BODY="${{ steps.release.outputs.body }}"
+          if [ ! -f "${{ steps.addon.outputs.changelog_path }}" ]; then
+            mkdir -p "$(dirname "${{ steps.addon.outputs.changelog_path }}")"
+            touch "${{ steps.addon.outputs.changelog_path }}"
           fi
-          
-          # Crie o conteúdo completo no temp.md
           {
             echo "$NEW_CHANGELOG_ENTRY_HEADER"
             echo "$NEW_CHANGELOG_ENTRY_BODY"
-            echo # Adiciona uma linha em branco para separar da entrada anterior
-            cat "${{ matrix.addon.changelog_path }}" # Adiciona o conteúdo existente do CHANGELOG.md
+            echo
+            cat "${{ steps.addon.outputs.changelog_path }}"
           } > temp.md
-          
-          # Move temp.md para sobrescrever o CHANGELOG.md original
-          mv temp.md "${{ matrix.addon.changelog_path }}"
-          
-          echo "Debug: Content of ${{ matrix.addon.changelog_path }} after prepend (first 1000 chars):"
-          head -c 1000 "${{ matrix.addon.changelog_path }}"
-          echo "..."
-          # Adicione o comando 'ls -la' para verificar o tamanho do arquivo
-          ls -la "${{ matrix.addon.changelog_path }}"
-        if: steps.extract.outputs.version != ''
+          mv temp.md "${{ steps.addon.outputs.changelog_path }}"
 
-
-      - name: Commit and push changes for ${{ matrix.addon.name }}
+      - name: Commit and push changelog
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          file_pattern: ${{ matrix.addon.changelog_path }}
+          file_pattern: ${{ steps.addon.outputs.changelog_path }}
           branch: ${{ github.event.pull_request.head.ref }}
-          commit_user_name: github-actions[bot]
-          commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
-          commit_message: |
-            docs(${
-              {
-                'wpp-connect-addon': 'wpp-connect',
-                'frigate-notify-addon': 'frigate-notify'
-              }[matrix.addon.name] or 'general'
-            }): update CHANGELOG for ${{ matrix.addon.name }} version ${{ steps.extract.outputs.version }}
-          push_options: --force
+          commit_message: "docs(${{steps.addon.outputs.addon_dir}}): update CHANGELOG for version ${{ steps.extract.outputs.version }}"
         if: steps.extract.outputs.version != ''
