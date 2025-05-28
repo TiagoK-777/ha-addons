@@ -8,6 +8,9 @@ on:
       - 'wpp-connect-addon/**'  # Apenas arquivos neste diretório acionam este workflow
   workflow_dispatch:  # Permite disparo manual
 
+permissions:
+  packages: write
+
 jobs:
   build-docker-addon:
     name: Build Docker Image - WPP Connect
