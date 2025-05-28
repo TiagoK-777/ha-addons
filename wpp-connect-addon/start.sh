@@ -92,7 +92,7 @@ echo ""
 ##############################################
 
 # Iniciar serviço em background
-exec $CMD &
+$CMD &
 NODE_PID=$!
 
 # Manter o script ativo esperando pelo processo
