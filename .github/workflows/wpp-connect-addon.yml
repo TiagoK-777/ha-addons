@@ -1,5 +1,4 @@
-name: 🛠️ WPP Connect Addon – Build & Publish
-
+name: Build & Publish WPP Connect Docker Image
 on:
   push:
     branches:
@@ -13,78 +12,49 @@ permissions:
   packages: write
 
 jobs:
-  build:
-    name: Docker — ${{ matrix.name }}
+  build-docker-addon:
+    name: Build Docker Image - WPP Connect
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        addon:
-          - name: wpp-connect-addon
-            config_path: ./wpp-connect-addon/config.yaml
-            context: ./wpp-connect-addon
-            dockerfile: ./wpp-connect-addon/Dockerfile
-            image_name: wpp-connect-addon
     steps:
-      - name: 🔁 Checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: 🔍 Verificar se há alterações relevantes no Addon
-        id: changed
-        uses: tj-actions/changed-files@v46
-        with:
-          files_yaml: |
-            ${{ matrix.context }}/***
-            ${{ matrix.dockerfile }}
-            ${{ matrix.config_path }}
-
-      - name: 🚦 Verificar se build é necessário
-        id: need-build
-        run: |
-          if [ "${{ steps.changed.outputs.any_changed }}" = "true" ]; then
-            echo "build_needed=true" >> $GITHUB_ENV
-          else
-            echo "build_needed=false" >> $GITHUB_ENV
-          fi
-
-      - name: 🧾 Extrair versão do config.yaml
-        if: env.build_needed == 'true'
+        
+      - name: Extract version from config.yaml
         id: extract_version
         run: |
-          VERSION=$(grep 'version' ${{ matrix.config_path }} | cut -d'"' -f2)
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
-        outputs:
-          version: env.version
-
-      - name: 🔐 Docker — Login no GHCR
-        if: env.build_needed == 'true'
+          if [ ! -f "wpp-connect-addon/config.yaml" ]; then
+            echo "Error: config.yaml not found"
+            exit 1
+          fi
+          VERSION=$(grep 'version:' wpp-connect-addon/config.yaml | cut -d'"' -f2)
+          echo "version_from_config=$VERSION" >> $GITHUB_OUTPUT
+          
+      - name: Docker login
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 📦 Docker — Setup Buildx
-        if: env.build_needed == 'true'
+          
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: 🏷️ Docker — Gerar metadata
-        if: env.build_needed == 'true'
+        
+      - name: Docker Metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/${{ github.repository_owner }}/${{ github.repository }}/wpp-connect-addon
+            ghcr.io/${{ github.repository_owner }}/wpp-connect-addon
           tags: |
-            type=raw, value=${{ steps.extract_version.outputs.version }}
+            type=raw, value=v${{ steps.extract_version.outputs.version_from_config }}
             type=raw, value=latest
             type=sha, format=short
-
-      - name: 🔧 Build & Push para GHCR – WPP Connect
-        if: env.build_needed == 'true'
+            
+      - name: Build & Push
         uses: docker/build-push-action@v6
         with:
-          context: ${{ matrix.context }}
-          file: ${{ matrix.dockerfile }}
+          context: ./wpp-connect-addon
+          file: ./wpp-connect-addon/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
