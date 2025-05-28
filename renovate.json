@@ -9,7 +9,7 @@
         "/^wpp-connect-addon/config\\.yaml$/"
       ],
       "matchStrings": [
-        "version:\\s*\"(?<currentValue>[\\w.]+)\"\\s*"
+        "version:\\s*\"(?<currentValue>[^\"\\-]+)(?:-\\d+)?\"\\s*"
       ],
       "depNameTemplate": "wppconnect-team/wppconnect-server",
       "datasourceTemplate": "github-releases",
