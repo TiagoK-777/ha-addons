@@ -245,7 +245,7 @@ for i in $(seq 1 10); do
   
   # Se chegamos na última tentativa e ainda não conectou, abortar
   if [ $i -eq 10 ]; then
-    log_info "PostgreSQL não respondeu após 10 tentativas, abortando..."
+    log_error "PostgreSQL não respondeu após 10 tentativas, abortando..."
     cleanup
     exit 1
   fi
@@ -304,5 +304,5 @@ NODE_PID=$!
 wait -n "$PG_PID" "$REDIS_PID" "$NODE_PID" || true
 
 # Se chegamos aqui, um dos processos terminou
-log_info "Um dos serviços terminou inesperadamente. Encerrando todos os serviços..."
+log_error "Um dos serviços terminou inesperadamente. Encerrando todos os serviços..."
 cleanup
