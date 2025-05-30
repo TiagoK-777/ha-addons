@@ -18,6 +18,18 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
+        "/^wpp-connect-addon/config\\.yaml$/"
+      ],
+      "matchStrings": [
+        "version:\\s*\"v\\d+\\.\\d+\\.\\d+-(?P<currentValue>[\\d.]+)\""
+      ],
+      "depNameTemplate": "wppconnect-team/wppconnect",
+      "datasourceTemplate": "github-releases",
+      "packageNameTemplate": "wppconnect-team/wppconnect"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
         "/^frigate-notify-addon/config\\.yaml$/"
       ],
       "matchStrings": [
