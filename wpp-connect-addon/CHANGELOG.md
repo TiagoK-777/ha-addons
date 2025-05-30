@@ -1,3 +1,6 @@
+## [v2.8.6-1.37.2] - 2025-05-30
+
+
 ## [2.8.6] - 2025-04-24
 ## [2.8.6](https://github.com/wppconnect-team/wppconnect-server/compare/v2.8.5...v2.8.6) (2025-03-29)
 
