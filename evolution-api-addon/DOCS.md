@@ -22,7 +22,7 @@ AUTHENTICATION_API_KEY: minha-senha-secreta # Chave de autenticação para acess
 # Configurações adicionais
 CUSTOM_ENV: DATABASE_SAVE_IS_ON_WHATSAPP_DAYS=1 DATABASE_SAVE_DATA_HISTORIC=false DATABASE_SAVE_DATA_NEW_MESSAGE=false # Variáveis de configuração adicionais, separadas por espaço
 ```
-* Os arquivos persistentes podem ser salvos em `/data` (mais seguro) ou `/config/addons_config/evolution-api` (assessível a partir do VSCode ou Terminal SSH).
+* Os arquivos persistentes podem ser salvos em `/data` (mais seguro) ou `/config/addons_config/evolution-api` (acessível a partir do VSCode ou Terminal SSH).
 
 ---
 
