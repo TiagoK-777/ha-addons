@@ -50,6 +50,20 @@ As variáveis em `CUSTOM_ENV` devem ser listadas na mesma linha, separadas por e
     ```yaml
     DATABASE_SAVE_IS_ON_WHATSAPP_DAYS=7 OUTRAS_VARIAVEIS=valor ...
     ```
+
+## ⚠️ Atenção: Pode ser preciso ajustar a versão do WhatsApp Web.
+
+**O que fazer:**
+1.  Acesse o WhatsApp Web.
+2.  Vá em **Configurações** (⚙️) -> **Ajuda**.
+3.  Anote o número da versão que aparece lá (ex: `2.3000.1023249347`).
+4.  Em `CUSTOM_ENV`, ajuste ou crie a variável de ambiente `CONFIG_SESSION_PHONE_VERSION` com esse número.
+
+*   **Exemplo:**
+    ```yaml
+    CONFIG_SESSION_PHONE_VERSION=2.3000.1023249347
+    ```
+
 Um exemplo com as variáveis de ambiente disponíveis podem ser encontradas [aqui](https://github.com/EvolutionAPI/evolution-api/blob/main/.env.example).
 
 ---
