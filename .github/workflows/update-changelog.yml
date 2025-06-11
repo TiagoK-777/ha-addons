@@ -104,7 +104,7 @@ jobs:
           mv temp.md "${{ steps.addon.outputs.changelog_path }}"
 
       - name: Commit and push changelog
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           file_pattern: ${{ steps.addon.outputs.changelog_path }}
