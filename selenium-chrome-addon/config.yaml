@@ -3,7 +3,8 @@ version: "137.0.7151.68"
 slug: selenium
 description: Selenium Grid Standalone with Chrome add-on
 url: https://github.com/SeleniumHQ/docker-selenium
-webui: http://[HOST]:[PORT:4444]
+webui: "http://[HOST]:[PORT:4444]"
+watchdog: "http://[HOST]:[PORT:4444]/"
 arch:
   - amd64
 init: false
