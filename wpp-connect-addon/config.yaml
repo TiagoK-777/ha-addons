@@ -4,7 +4,7 @@ slug: wppconnect
 description: "API para controle do WhatsApp via HTTP"
 url: "https://github.com/wppconnect-team/wppconnect-server"
 webui: "http://[HOST]:[PORT:21465]/api-docs/"
-watchdog: "http://[HOST]:[PORT:21465]/"
+watchdog: "http://[HOST]:[PORT:21465]/healthz"
 arch:
   - amd64
 init: false
