@@ -4,7 +4,9 @@ on:
     branches:
       - main
     paths:
-      - 'evolution-api-addon/**'
+      - 'evolution-api-addon/Dockerfile'
+      - 'evolution-api-addon/run.sh'
+      - 'evolution-api-addon/config.yaml'
   workflow_dispatch:
 
 permissions:
