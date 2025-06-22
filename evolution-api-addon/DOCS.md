@@ -68,6 +68,12 @@ Um exemplo com as variáveis de ambiente disponíveis podem ser encontradas [aqu
 
 ---
 
+## 📋 Exemplos de Uso
+*   **Fluxo para node-red:**
+    Baixe o fluxo de exemplo [aqui](https://github.com/TiagoK-777/ha-addons/blob/main/documentos/exemplos/evolution-api/exemplo_node-red.json) e importe no Node-RED.
+
+---
+
 ## 🤝 Contribuições
 
 Contribuições são bem-vindas! Sinta-se à vontade para abrir *issues* ou enviar *pull requests* para melhorias.
