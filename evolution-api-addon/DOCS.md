@@ -80,6 +80,30 @@ Um exemplo com as variáveis de ambiente disponíveis podem ser encontradas [aqu
 
 ---
 
+## 🤩 Integração nativa com o Home Assistant
+
+**Como instalar e ativar:**
+
+1.  Acesse a aba "Ajustes" e ative a opção `HA_INTEGRATION`.
+2.  Reinicie o Home Assistant.
+3.  Adicione o seguinte conteúdo ao seu arquivo `configuration.yml`, substituindo `api_key` e `clientId` pelos seus respectivos valores:
+
+    ```
+    whatsapp:
+      host: "http://homeassistant:49152"
+      api_key: "FB63F08A1EC4-XXXX-XXXX-XXXXXXXXXXXX"
+      clientId: "thunderboltbr"
+    ```
+4.  Reinicie o Home Assistant.
+
+**Como utilizar:**
+
+Após a configuração, serão criados três serviços: `whatsapp.send_message`, `whatsapp.send_media` e `whatsapp.send_audio`.
+
+No Home Assistant, vá para "Ferramentas de Desenvolvedor" > "Ações". Ao buscar por esses serviços, você encontrará exemplos de uso com preenchimento automático. Essas opções também podem ser utilizadas em suas automações.
+
+---
+
 ## 🤝 Contribuições
 
 Contribuições são bem-vindas! Sinta-se à vontade para abrir *issues* ou enviar *pull requests* para melhorias.
