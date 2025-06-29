@@ -39,6 +39,9 @@ WORKDIR /evolution
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
 
+# Copia a pasta da integração
+COPY custom_component/* /evolution/custom_component/
+
 # Define um HEALTHCHECK para monitorar a saúde da aplicação.
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -s http://localhost:49152/ | jq -e '.status == 200' || exit 1

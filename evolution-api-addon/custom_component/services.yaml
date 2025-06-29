@@ -1,0 +1,119 @@
+send_message:
+  name: Enviar mensagem
+  description: Envia uma mensagem pelo Whatsapp via Evolution API.
+  fields:
+    clientId:
+      name: Nome da instância
+      description: Qual instância da Evolution API deve ser usada (pode ser configurada globalmente)
+      required: false
+      example: default (ou configure globalmente no configuration.yaml)
+    apikey:
+      name: Chave API
+      description: Chave de autenticação da Evolution API (pode ser configurada globalmente)
+      required: false
+      example: your-api-key-here (ou configure globalmente no configuration.yaml)
+    to:
+      name: Número de telefone
+      description: Número do destinatário com código do país
+      required: true
+      example: 391234567890@s.whatsapp.net
+    message:
+      name: Texto da mensagem
+      description: Conteúdo de texto da mensagem
+      required: true
+      example: Olá Mundo!
+    linkPreview:
+      name: Pré-visualização de link
+      description: Ativar pré-visualização de link
+      required: false
+      example: "false"
+
+send_media:
+  name: Enviar mídia
+  description: Envia uma mídia pelo Whatsapp via Evolution API.
+  fields:
+    clientId:
+      name: Nome da instância
+      description: Qual instância da Evolution API deve ser usada (pode ser configurada globalmente)
+      required: false
+      example: default (ou configure globalmente no configuration.yaml)
+    apikey:
+      name: Chave API
+      description: Chave de autenticação da Evolution API (pode ser configurada globalmente)
+      required: false
+      example: your-api-key-here (ou configure globalmente no configuration.yaml)
+    to:
+      name: Número de telefone
+      description: Número do destinatário com código do país
+      required: true
+      example: 391234567890@s.whatsapp.net
+    mediatype:
+      name: Tipo de mídia
+      description: Tipo da mídia a ser enviada (image, video, audio, document)
+      required: true
+      example: image
+    mimetype:
+      name: Tipo MIME (image/jpeg, image/png, video/mp4, audio/mpeg, audio/ogg, application/pdf)
+      description: Tipo MIME do arquivo
+      required: true
+      example: image/png
+    caption:
+      name: Legenda
+      description: Legenda opcional para a mídia
+      required: false
+      example: Veja esta imagem
+    media:
+      name: Mídia
+      description: URL ou base64 da mídia a ser enviada
+      required: true
+      example: https://demo.home-assistant.io/stub_config/kitchen.png
+    fileName:
+      name: Nome do arquivo
+      description: Nome do arquivo para documentos
+      required: false
+      example: documento.pdf
+    delay:
+      name: Atraso
+      description: Atraso em milissegundos antes do envio
+      required: false
+      example: 1000
+    linkPreview:
+      name: Pré-visualização de link
+      description: Ativar pré-visualização de link
+      required: false
+      example: "false"
+
+send_audio:
+  name: Enviar áudio
+  description: Envia um áudio pelo Whatsapp via Evolution API.
+  fields:
+    clientId:
+      name: Nome da instância
+      description: Qual instância da Evolution API deve ser usada (pode ser configurada globalmente)
+      required: false
+      example: default (ou configure globalmente no configuration.yaml)
+    apikey:
+      name: Chave API
+      description: Chave de autenticação da Evolution API (pode ser configurada globalmente)
+      required: false
+      example: your-api-key-here (ou configure globalmente no configuration.yaml)
+    to:
+      name: Número de telefone
+      description: Número do destinatário com código do país
+      required: true
+      example: 391234567890@s.whatsapp.net
+    audio:
+      name: Áudio
+      description: URL ou base64 do áudio a ser enviado
+      required: true
+      example: https://github.com/rafaelreis-hotmart/Audio-Sample-files/raw/refs/heads/master/sample.mp3
+    delay:
+      name: Atraso
+      description: Atraso em milissegundos antes do envio
+      required: false
+      example: 1000
+    linkPreview:
+      name: Pré-visualização de link
+      description: Ativar pré-visualização de link
+      required: false
+      example: "false"

@@ -1,5 +1,5 @@
 name: Evolution API
-version: "v2.3.0"
+version: "v2.3.0-1"
 slug: evolutionapi
 description: "API para controle do WhatsApp via HTTP"
 url: "https://github.com/EvolutionAPI/evolution-api"
@@ -26,6 +26,7 @@ options:
   PERSISTENCE_DIR: "/data"
   CUSTOM_ENV: >-
     DATABASE_SAVE_IS_ON_WHATSAPP_DAYS=1 DATABASE_SAVE_DATA_HISTORIC=false DATABASE_SAVE_DATA_NEW_MESSAGE=false
+  HA_INTEGRATION: false
 schema:
   SERVER_TYPE: "str?"
   SERVER_HOST: "str?"
@@ -40,6 +41,7 @@ schema:
     match(^(/(data|config/addons_config/evolution-api))$)
   CUSTOM_ENV: >-
     match(^(([A-Z0-9_]+=(\"[^\"]*\"|'[^']*'|[^ ]+))( +[A-Z0-9_]+=(\"[^\"]*\"|'[^']*'|[^ ]+))*)?$)
+  HA_INTEGRATION: "bool?"
 ports:
   49152/tcp: 49152
 image: "ghcr.io/tiagok-777/evolution-api-addon"

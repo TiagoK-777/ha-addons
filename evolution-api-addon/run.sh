@@ -13,6 +13,18 @@ log_error() {
 }
 
 # -----------------------------------------------------------------------------
+# Função para comparar versões
+# Retorna 0 se $1 >= $2, 1 caso contrário
+# -----------------------------------------------------------------------------
+compare_versions() {
+  # Retorna 0 se $1 > $2, 1 caso contrário
+  # Compara as duas versões. Se a primeira versão for maior, sort -V colocará a segunda em primeiro.
+  # Se a primeira versão for menor ou igual, sort -V colocará a primeira em primeiro (ou manterá a ordem se forem iguais).
+  # Então, se o resultado de sort -V com head -n 1 for a segunda versão, e as versões não forem iguais, significa que a primeira é maior.
+  [ "$(printf '%s\n' "$1" "$2" | sort -V | head -n 1)" = "$2" ] && [ "$1" != "$2" ]
+}
+
+# -----------------------------------------------------------------------------
 # Variáveis globais para controle de PIDs
 # -----------------------------------------------------------------------------
 PG_PID=""
@@ -123,6 +135,7 @@ if [ -f "$CONFIG" ]; then
   DATABASE_CONNECTION_URI=$(jq -r '.DATABASE_CONNECTION_URI // "postgresql://user:pass@localhost:5432/evolution?schema=public"' "$CONFIG")
   AUTHENTICATION_API_KEY=$(jq -r '.AUTHENTICATION_API_KEY // "minha-senha-secreta"' "$CONFIG")
   PERSISTENCE_DIR=$(jq -r '.PERSISTENCE_DIR // "/data"' "$CONFIG")
+  HA_INTEGRATION=$(jq -r '.HA_INTEGRATION // ""' "$CONFIG")
   
   # Carrega as variáveis definidas em CUSTOM_ENV
   CUSTOM_ENV=$(jq -r '.CUSTOM_ENV // ""' "$CONFIG")
@@ -191,8 +204,37 @@ if [[ -f "/data/postgresql/PG_VERSION" && "$PERSISTENCE_DIR" != "/data" ]]; then
     rm -rf "/data/postgresql" || { log_error "Falha ao remover postgresql antigo"; exit 1; }
     rm -rf "/data/redis" || { log_error "Falha ao remover redis antigo"; exit 1; }
     rm -rf "/data/instances" || { log_error "Falha ao remover instances"; exit 1; }
-    log_info "Migração concluída. Aguardando 10 segundos para estabilização..."
-    sleep 10
+    log_info "Migração concluída. Aguardando 5 segundos para estabilização..."
+    sleep 5
+fi
+
+# -----------------------------------------------------------------------------
+# Instalar ou atualizar a integração
+# -----------------------------------------------------------------------------
+if [ "$HA_INTEGRATION" = "true" ]; then
+  log_info "Verificando e instalando integração..."
+  
+  NEW_VERSION=$(jq -r '.version' "/evolution/custom_component/manifest.json")
+  INSTALLED_MANIFEST="/config/custom_components/evolution_api/manifest.json"
+  INSTALLED_VERSION=""
+
+  if [ -f "$INSTALLED_MANIFEST" ]; then
+    INSTALLED_VERSION=$(jq -r '.version' "$INSTALLED_MANIFEST")
+  fi
+
+  if [ -z "$INSTALLED_VERSION" ]; then
+    log_info "Nenhuma versão da integração encontrada. Instalando a versão ${NEW_VERSION}..."
+    mkdir -p "/config/custom_components/evolution_api" || { log_error "Falha ao criar diretório evolution_api"; exit 1; }
+    cp -r /evolution/custom_component/* "/config/custom_components/evolution_api/" || { log_error "Falha ao copiar custom component"; exit 1; }
+    log_info "Integração ${NEW_VERSION} instalada com sucesso!"
+  elif compare_versions "$NEW_VERSION" "$INSTALLED_VERSION"; then
+    log_info "Versão atual da integração (${INSTALLED_VERSION}) é menor ou igual à nova versão (${NEW_VERSION}). Atualizando..."
+    mkdir -p "/config/custom_components/evolution_api" || { log_error "Falha ao criar diretório evolution_api"; exit 1; }
+    cp -r /evolution/custom_component/* "/config/custom_components/evolution_api/" || { log_error "Falha ao copiar custom component"; exit 1; }
+    log_info "Integração atualizada para a versão ${NEW_VERSION} com sucesso!"
+  else
+    log_info "A versão da integração (${INSTALLED_VERSION}) já é a mais recente ou superior à disponível (${NEW_VERSION}). Nenhuma atualização necessária."
+  fi
 fi
 
 # -----------------------------------------------------------------------------
