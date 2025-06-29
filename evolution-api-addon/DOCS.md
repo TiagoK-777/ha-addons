@@ -84,7 +84,7 @@ Um exemplo com as variáveis de ambiente disponíveis podem ser encontradas [aqu
 
 **Como instalar e ativar:**
 
-1.  Acesse a aba "Ajustes" e ative a opção `HA_INTEGRATION`.
+1.  Acesse a aba "Ajustes" e ative a opção `HA_INTEGRATION` e reinicie o add-on.
 2.  Reinicie o Home Assistant.
 3.  Adicione o seguinte conteúdo ao seu arquivo `configuration.yml`, substituindo `api_key` e `clientId` pelos seus respectivos valores:
 
