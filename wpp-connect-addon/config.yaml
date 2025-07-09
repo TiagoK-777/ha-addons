@@ -1,5 +1,5 @@
 name: WPPConnect Server
-version: "v2.8.6-1.37.2"
+version: "v2.8.6-1.37.3"
 slug: wppconnect
 description: "API para controle do WhatsApp via HTTP"
 url: "https://github.com/wppconnect-team/wppconnect-server"
