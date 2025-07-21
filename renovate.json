@@ -78,6 +78,12 @@
         "redis/redis"
       ],
       "automerge": true
+    },
+    {
+      "matchDepNames": [
+        "selenium/standalone-chrome"
+      ],
+      "automerge": true
     }
   ]
 }

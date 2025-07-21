@@ -53,8 +53,8 @@ send_media:
       required: true
       example: image
     mimetype:
-      name: Tipo MIME (image/jpeg, image/png, video/mp4, audio/mpeg, audio/ogg, application/pdf)
-      description: Tipo MIME do arquivo
+      name: Tipo MIME
+      description: Tipo MIME do arquivo (image/jpeg, image/png, video/mp4, audio/mpeg, audio/ogg, application/pdf)
       required: true
       example: image/png
     caption:
