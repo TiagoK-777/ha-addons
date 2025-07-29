@@ -1,2 +1,2 @@
 build_from:
-  amd64: "evoapicloud/evolution-api:v2.3.0"
+  amd64: "evoapicloud/evolution-api:v2.3.1"
