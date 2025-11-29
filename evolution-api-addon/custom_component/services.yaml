@@ -71,7 +71,7 @@ send_media:
       name: Nome do arquivo
       description: Nome do arquivo para documentos
       required: false
-      example: documento.pdf
+      example: imagem.png
     delay:
       name: Atraso
       description: Atraso em milissegundos antes do envio
