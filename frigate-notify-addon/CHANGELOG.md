@@ -1,3 +1,10 @@
+## [v0.5.4] - 2026-01-13
+## Changelog
+
+ - Add option to use UUID as message ID for SMTP alerts
+ - Fix issue where Gotify snapshots did not include any configured URL parameters
+ - Fix issue where headers configured via environment variables may not be parsed corectly
+
 ## [v0.5.3] - 2025-09-17
 ## Changelog
 
