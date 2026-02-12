@@ -3,7 +3,7 @@
 ### Estágio 1: Configuração da Imagem Base e Variáveis de Ambiente ###
 
 # Imagem oficial da Evolution API como base.
-FROM evoapicloud/evolution-api:v2.3.6
+FROM evoapicloud/evolution-api:v2.3.7
 
 # Define variáveis de ambiente essenciais para o ambiente Docker e Home Assistant Add-on.
 ENV TZ=America/Sao_Paulo \
