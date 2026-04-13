@@ -1,5 +1,5 @@
 name: Selenium Grid Standalone
-version: "145.0.7632.116"
+version: "147.0.7727.55"
 slug: selenium
 description: Selenium Grid Standalone with Chrome add-on
 url: https://github.com/SeleniumHQ/docker-selenium
