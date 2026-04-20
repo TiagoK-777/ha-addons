@@ -11,4 +11,7 @@ init: false
 ports:
   4444/tcp: 4444
   7900/tcp: 7900
+environment:
+  SE_NODE_MAX_SESSIONS: "4"
+  SE_NODE_OVERRIDE_MAX_SESSIONS: "true"
 image: "selenium/standalone-chrome"
