@@ -14,4 +14,7 @@ ports:
 environment:
   SE_NODE_MAX_SESSIONS: "4"
   SE_NODE_OVERRIDE_MAX_SESSIONS: "true"
+  TZ: "America/Sao_Paulo"
+  SE_NODE_SESSION_TIMEOUT: "120"
+  SE_VNC_NO_PASSWORD: "true"
 image: "selenium/standalone-chrome"
